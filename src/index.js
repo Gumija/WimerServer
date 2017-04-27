@@ -2,7 +2,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import session from 'express-session';
-import MariaSQLClient from 'mariasql';
+import mysql from 'mysql';
 import morgan from 'morgan';
 import multer from 'multer';
 import passport from 'passport';
@@ -11,49 +11,54 @@ import path from 'path';
 
 let app = express();
 let upload = multer({ dest: 'uploads/' });
-let mariaDB = new MariaSQLClient({
-  host: '127.0.0.1',
+
+let connection = mysql.createConnection({
+  host: 'localhost',
   user: 'root',
   password: '',
+  database: 'wimer'
 })
 
+var sql = "SELECT * FROM ??";
+var inserts = ['users'];
+sql = mysql.format(sql, inserts);
+console.log(sql);
+// connection.query(sql, (error, results, fields) => {
+//   if (error) throw error;
+//   console.log('results:', results);
+// })
+
 let documents = {
-  insert: mariaDB.prepare(
-    'INSERT INTO wimer.documents \
-     VALUES (:id, :title, :path, :type, :encoding)'),
-  selectAll: mariaDB.prepare(
-    'SELECT * \
-     FROM wimer.documents'
-  ),
-  selectById: mariaDB.prepare(
-    'SELECT * \
+  insert:
+  'INSERT INTO wimer.documents \
+     VALUES (?, ?, ?, ?, ?)',
+  selectAll:
+  'SELECT * \
+     FROM wimer.documents',
+  selectById:
+  'SELECT * \
      FROM wimer.documents \
-     WHERE id = :id'
-  ),
-  update: mariaDB.prepare(
-    'UPDATE wimer.documents \
-     SET title = :title \
-     WHERE id = :id'
-  ),
+     WHERE id = ?',
+  update:
+  'UPDATE wimer.documents \
+     SET title = ? \
+     WHERE id = ?',
 }
 
 let highlights = {
-  insert: mariaDB.prepare(
-    'INSERT INTO wimer.highlights \
-     VALUES (:id, :start, :end, :class, :container, :documentId, :userId)'
-  ),
-  delete: mariaDB.prepare(
-    'DELETE FROM wimer.highlights \
-     WHERE id = :id \
-     AND document_id = :documentId \
-     AND user_id = :userId'
-  ),
-  selectByDocumentAndUser: mariaDB.prepare(
-    'SELECT * \
+  insert:
+  'INSERT INTO wimer.highlights \
+     VALUES (?, ?, ?, ?, ?, ?, ?)',
+  delete:
+  'DELETE FROM wimer.highlights \
+     WHERE id = ? \
+     AND document_id = ? \
+     AND user_id = ?',
+  selectByDocumentAndUser:
+  'SELECT * \
      FROM wimer.highlights \
-     WHERE document_id = :documentId \
-     AND user_id = :userId'
-  )
+     WHERE document_id = ? \
+     AND user_id = ?',
 }
 
 // logger
@@ -63,35 +68,39 @@ app.use(express.static(path.resolve(__dirname, '..', 'WimerReact/build')));
 app.use(bodyParser.json());
 
 app.get('/highlight/:documentId/:userId', (req, res) => {
-  mariaDB.query(highlights.selectByDocumentAndUser({
-    documentId: req.params.documentId,
-    userId: req.params.userId,
-  }),
-    (err, rows) => {
-      if (err) {
-        console.log(err);
+  connection.query(mysql.format(highlights.selectByDocumentAndUser,
+    [
+      req.params.documentId,
+      req.params.userId,
+    ]
+  ),
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
         res.sendStatus(500);
         return;
       }
-      console.log(rows);
-      res.json(rows);
+      console.log(results);
+      res.json(results);
     }
   )
 })
 
 app.delete('/highlight', (req, res) => {
-  mariaDB.query(highlights.delete({
-    id: req.body.id,
-    documentId: req.body.documentId,
-    userId: req.body.userId,
-  }),
-    (err, rows) => {
-      if (err) {
-        console.log(err);
+  connection.query(mysql.format(highlights.delete,
+    [
+      req.body.id,
+      req.body.documentId,
+      req.body.userId,
+    ]
+  ),
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
         res.sendStatus(500);
         return;
       }
-      console.log(rows);
+      console.log(fields);
       res.sendStatus(200);
     }
   )
@@ -99,79 +108,84 @@ app.delete('/highlight', (req, res) => {
 
 app.post('/highlight', (req, res) => {
   // save highlight from body
-  mariaDB.query(highlights.insert({
-    id: req.body.id,
-    start: req.body.start,
-    end: req.body.end,
-    class: req.body.class,
-    container: req.body.container,
-    documentId: req.body.documentId,
-    userId: req.body.userId,
-  }),
-    (err, rows) => {
-      if (err) {
-        console.log(err);
+  connection.query(mysql.format(highlights.insert,
+    [
+      req.body.id,
+      req.body.start,
+      req.body.end,
+      req.body.class,
+      req.body.container,
+      req.body.documentId,
+      req.body.userId,
+    ]
+  ),
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
         res.sendStatus(500);
         return;
       }
-      console.log(rows);
+      console.log(results);
       res.sendStatus(200);
     }
   )
 })
 
 app.get('/documents/download/:id', (req, res) => {
-  mariaDB.query(documents.selectById({ id: req.params.id }),
-    (err, rows) => {
-      if (err) {
-        console.log(err);
+  console.log(mysql.format(documents.selectById, [req.params.id]));
+  connection.query(mysql.format(documents.selectById, [req.params.id]),
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
         res.sendStatus(500);
         return;
       }
-      console.log(rows);
-      res.download(rows[0].path);
+      console.log(results);
+      res.download(results[0].path);
     }
   )
 })
 
 app.post('/documents/update/:id', (req, res) => {
-  mariaDB.query(documents.update({ title: req.body.title, id: req.params.id }),
-    (err, rows) => {
-      if (err) {
-        console.log(err);
+  connection.query(mysql.format(documents.update, [req.body.title, req.params.id]),
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
         res.sendStatus(500);
         return;
       }
-      console.log(rows);
-      res.json(rows);
+      console.log(results);
+      res.json(results);
     }
   )
 })
 
 app.get('/documents/:id', (req, res) => {
-  mariaDB.query(documents.selectById({ id: req.params.id }),
-    (err, rows) => {
-      if (err) {
-        console.log(err);
+  console.log(typeof(req.params.id))
+  console.log(mysql.format(documents.selectById, [parseInt(req.params.id, 10)]))
+  connection.query(mysql.format(documents.selectById, [parseInt(req.params.id, 10)]),
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
         res.sendStatus(500);
         return;
       }
-      console.log(rows);
-      res.json(rows);
+      console.log(results);
+      res.json(results);
     }
   )
 })
 
 app.get('/documents', (req, res) => {
-  mariaDB.query(documents.selectAll(),
-    (err, rows) => {
-      if (err) {
-        console.log(err);
+  connection.query(documents.selectAll,
+    (error, results, field) => {
+      if (error) {
+        console.log(error);
         res.sendStatus(500);
         return;
       }
-      console.log(rows);
-      res.json(rows);
+      console.log(results);
+      res.json(results);
     }
   )
 })
@@ -179,21 +193,22 @@ app.get('/documents', (req, res) => {
 app.post('/upload', upload.single('doc'), (req, res) => {
   let file = req.file;
   // save document info to db
-  mariaDB.query(documents.insert({
-    id: 0,
-    title: file.originalname,
-    path: file.path,
-    type: file.mimetype,
-    encoding: file.encoding,
-  }),
-    (err, rows) => {
-      if (err) {
-        console.log(err);
+  connection.query(mysql.format(documents.insert,
+    [
+      0,
+      file.originalname,
+      file.path,
+      file.mimetype,
+      file.encoding,
+    ]),
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
         res.sendStatus(500);
         return;
       }
-      console.log(rows);
-      res.json({ id: rows.info.insertId });
+      console.log(results);
+      res.json({ id: results.insertId });
     }
   )
 })
