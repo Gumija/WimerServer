@@ -65,7 +65,7 @@ var documents = {
 
 var highlights = {
   insert: mariaDB.prepare('INSERT INTO wimer.highlights \
-     VALUES (:id, :start, :end, :class, :container, :documentId, :userId'),
+     VALUES (:id, :start, :end, :class, :container, :documentId, :userId)'),
   delete: mariaDB.prepare('DELETE FROM wimer.highlights \
      WHERE id = :id \
      AND document_id = :documentId \
@@ -90,6 +90,7 @@ app.get('/highlight/:documentId/:userId', function (req, res) {
     if (err) {
       console.log(err);
       res.sendStatus(500);
+      return;
     }
     console.log(rows);
     res.json(rows);
@@ -105,6 +106,7 @@ app.delete('/highlight', function (req, res) {
     if (err) {
       console.log(err);
       res.sendStatus(500);
+      return;
     }
     console.log(rows);
     res.sendStatus(200);
@@ -125,6 +127,7 @@ app.post('/highlight', function (req, res) {
     if (err) {
       console.log(err);
       res.sendStatus(500);
+      return;
     }
     console.log(rows);
     res.sendStatus(200);
@@ -136,6 +139,7 @@ app.get('/documents/download/:id', function (req, res) {
     if (err) {
       console.log(err);
       res.sendStatus(500);
+      return;
     }
     console.log(rows);
     res.download(rows[0].path);
@@ -147,6 +151,7 @@ app.post('/documents/update/:id', function (req, res) {
     if (err) {
       console.log(err);
       res.sendStatus(500);
+      return;
     }
     console.log(rows);
     res.json(rows);
@@ -158,6 +163,7 @@ app.get('/documents/:id', function (req, res) {
     if (err) {
       console.log(err);
       res.sendStatus(500);
+      return;
     }
     console.log(rows);
     res.json(rows);
@@ -169,6 +175,7 @@ app.get('/documents', function (req, res) {
     if (err) {
       console.log(err);
       res.sendStatus(500);
+      return;
     }
     console.log(rows);
     res.json(rows);
@@ -188,6 +195,7 @@ app.post('/upload', upload.single('doc'), function (req, res) {
     if (err) {
       console.log(err);
       res.sendStatus(500);
+      return;
     }
     console.log(rows);
     res.json({ id: rows.info.insertId });
@@ -199,9 +207,9 @@ app.get('*', function (req, res) {
   res.sendFile(_path2.default.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
 });
 
-var PORT = process.env.PORT || 3001;
+app.set('port', process.env.PORT || 3001);
 
-app.listen(PORT, function () {
-  console.log('App listening on port ' + PORT + '!');
+app.listen(app.get('port'), function () {
+  console.log('App listening on port ' + app.get("port") + '!');
 });
 //# sourceMappingURL=index.js.map

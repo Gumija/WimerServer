@@ -205,8 +205,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3001;
+app.set('port', (process.env.PORT || 3001));
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}!`);
+app.listen(app.get('port'), () => {
+  console.log(`App listening on port ${app.get("port")}!`);
 });
