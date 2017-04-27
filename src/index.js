@@ -40,7 +40,7 @@ let documents = {
 let highlights = {
   insert: mariaDB.prepare(
     'INSERT INTO wimer.highlights \
-     VALUES (:id, :start, :end, :class, :container, :documentId, :userId'
+     VALUES (:id, :start, :end, :class, :container, :documentId, :userId)'
   ),
   delete: mariaDB.prepare(
     'DELETE FROM wimer.highlights \
@@ -57,9 +57,9 @@ let highlights = {
 }
 
 // logger
-// app.use(morgan('dev'));
-app.use(express.static(path.resolve(__dirname, '..', 'wimer/build')));
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
+// Serve static assets
+app.use(express.static(path.resolve(__dirname, '..', 'WimerReact/build')));
 app.use(bodyParser.json());
 
 app.get('/highlight/:documentId/:userId', (req, res) => {
@@ -71,6 +71,7 @@ app.get('/highlight/:documentId/:userId', (req, res) => {
       if (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
       }
       console.log(rows);
       res.json(rows);
@@ -88,6 +89,7 @@ app.delete('/highlight', (req, res) => {
       if (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
       }
       console.log(rows);
       res.sendStatus(200);
@@ -110,6 +112,7 @@ app.post('/highlight', (req, res) => {
       if (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
       }
       console.log(rows);
       res.sendStatus(200);
@@ -123,6 +126,7 @@ app.get('/documents/download/:id', (req, res) => {
       if (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
       }
       console.log(rows);
       res.download(rows[0].path);
@@ -136,6 +140,7 @@ app.post('/documents/update/:id', (req, res) => {
       if (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
       }
       console.log(rows);
       res.json(rows);
@@ -149,6 +154,7 @@ app.get('/documents/:id', (req, res) => {
       if (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
       }
       console.log(rows);
       res.json(rows);
@@ -162,6 +168,7 @@ app.get('/documents', (req, res) => {
       if (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
       }
       console.log(rows);
       res.json(rows);
@@ -183,6 +190,7 @@ app.post('/upload', upload.single('doc'), (req, res) => {
       if (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
       }
       console.log(rows);
       res.json({ id: rows.info.insertId });
@@ -191,11 +199,10 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 })
 
 
-// Serve static assets
 
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '..', 'wimer/build', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3001;
