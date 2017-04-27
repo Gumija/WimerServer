@@ -1,0 +1,44 @@
+
+.document-view-container{
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.loading_indicator {
+  align-self: center;
+  justify-content: center;
+  display: flex;
+  margin-top: 60px;
+}
+
+.absolute-fab1{
+  position: fixed;
+  margin: 12px;
+  right: 0px;
+  bottom: 0px;
+}
+
+.absolute-fab2{
+  position: fixed;
+  margin: 12px;
+  right: 0px;
+  bottom: 0px;
+}
+
+.absolute-fab3{
+  position: fixed;
+  margin: 12px;
+  right: 0px;
+  bottom: 0px;
+}
+
+.absolute-eraser{
+  position: fixed;
+  margin: 12px;
+  right: 0px;
+  bottom: 64px;
+}
+
+.fab-add{
+  margin-bottom: 8px;
+}

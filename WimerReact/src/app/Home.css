@@ -1,0 +1,32 @@
+.home-container{
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.section-header{
+  font-family: Roboto, sans-serif;
+  border-bottom: 1px solid black;
+  padding-bottom: 6px;
+  font-size: 26px;
+}
+
+.absolute-fab{
+  position: fixed;
+  margin: 12px;
+  right: 0px;
+  bottom: 0px;
+}
+
+.absolute-eraser{
+  position: fixed;
+  margin: 12px;
+  right: 0px;
+  bottom: 64px;
+}
+
+.absolute-add{
+  position: fixed;
+  margin: 12px;
+  right: 64px;
+  bottom: 8px;
+}
