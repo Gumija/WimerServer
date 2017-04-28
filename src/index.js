@@ -13,13 +13,19 @@ import DbIniter from './db/db';
 let app = express();
 let upload = multer({ dest: 'uploads/' });
 
-let connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  flags: 'NO_SCHEMA'
-})
 
+let dbUrl = process.env.DATABASE_URL;
+let connection;
+if (dbUrl) {
+  connection = mysql.createConnection(dbUrl);
+} else {
+  connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    flags: 'NO_SCHEMA'
+  })
+}
 let dbIniter = new DbIniter(connection);
 dbIniter.initDB();
 

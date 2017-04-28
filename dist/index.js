@@ -16,9 +16,9 @@ var _expressSession = require('express-session');
 
 var _expressSession2 = _interopRequireDefault(_expressSession);
 
-var _mariasql = require('mariasql');
+var _mysql = require('mysql');
 
-var _mariasql2 = _interopRequireDefault(_mariasql);
+var _mysql2 = _interopRequireDefault(_mysql);
 
 var _morgan = require('morgan');
 
@@ -40,40 +40,54 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
+var _db = require('./db/db');
+
+var _db2 = _interopRequireDefault(_db);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
 var upload = (0, _multer2.default)({ dest: 'uploads/' });
-var mariaDB = new _mariasql2.default({
-  host: '127.0.0.1',
-  user: 'root',
-  password: ''
-});
+
+var dbUrl = process.env.DATABASE_URL;
+var connection = void 0;
+if (dbUrl) {
+  connection = _mysql2.default.createConnection(dbUrl);
+} else {
+  connection = _mysql2.default.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    flags: 'NO_SCHEMA'
+  });
+}
+var dbIniter = new _db2.default(connection);
+dbIniter.initDB();
 
 var documents = {
-  insert: mariaDB.prepare('INSERT INTO wimer.documents \
-     VALUES (:id, :title, :path, :type, :encoding)'),
-  selectAll: mariaDB.prepare('SELECT * \
-     FROM wimer.documents'),
-  selectById: mariaDB.prepare('SELECT * \
+  insert: 'INSERT INTO wimer.documents \
+     VALUES (?, ?, ?, ?, ?)',
+  selectAll: 'SELECT * \
+     FROM wimer.documents',
+  selectById: 'SELECT * \
      FROM wimer.documents \
-     WHERE id = :id'),
-  update: mariaDB.prepare('UPDATE wimer.documents \
-     SET title = :title \
-     WHERE id = :id')
+     WHERE id = ?',
+  update: 'UPDATE wimer.documents \
+     SET title = ? \
+     WHERE id = ?'
 };
 
 var highlights = {
-  insert: mariaDB.prepare('INSERT INTO wimer.highlights \
-     VALUES (:id, :start, :end, :class, :container, :documentId, :userId)'),
-  delete: mariaDB.prepare('DELETE FROM wimer.highlights \
-     WHERE id = :id \
-     AND document_id = :documentId \
-     AND user_id = :userId'),
-  selectByDocumentAndUser: mariaDB.prepare('SELECT * \
+  insert: 'INSERT INTO wimer.highlights \
+     VALUES (?, ?, ?, ?, ?, ?, ?)',
+  delete: 'DELETE FROM wimer.highlights \
+     WHERE id = ? \
+     AND document_id = ? \
+     AND user_id = ?',
+  selectByDocumentAndUser: 'SELECT * \
      FROM wimer.highlights \
-     WHERE document_id = :documentId \
-     AND user_id = :userId')
+     WHERE document_id = ? \
+     AND user_id = ?'
 };
 
 // logger
@@ -83,122 +97,102 @@ app.use(_express2.default.static(_path2.default.resolve(__dirname, '..', 'WimerR
 app.use(_bodyParser2.default.json());
 
 app.get('/highlight/:documentId/:userId', function (req, res) {
-  mariaDB.query(highlights.selectByDocumentAndUser({
-    documentId: req.params.documentId,
-    userId: req.params.userId
-  }), function (err, rows) {
-    if (err) {
-      console.log(err);
+  connection.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
+    if (error) {
+      console.log(error);
       res.sendStatus(500);
       return;
     }
-    console.log(rows);
-    res.json(rows);
+    console.log(results);
+    res.json(results);
   });
 });
 
 app.delete('/highlight', function (req, res) {
-  mariaDB.query(highlights.delete({
-    id: req.body.id,
-    documentId: req.body.documentId,
-    userId: req.body.userId
-  }), function (err, rows) {
-    if (err) {
-      console.log(err);
+  connection.query(_mysql2.default.format(highlights.delete, [req.body.id, req.body.documentId, req.body.userId]), function (error, results, fields) {
+    if (error) {
+      console.log(error);
       res.sendStatus(500);
       return;
     }
-    console.log(rows);
+    console.log(fields);
     res.sendStatus(200);
   });
 });
 
 app.post('/highlight', function (req, res) {
   // save highlight from body
-  mariaDB.query(highlights.insert({
-    id: req.body.id,
-    start: req.body.start,
-    end: req.body.end,
-    class: req.body.class,
-    container: req.body.container,
-    documentId: req.body.documentId,
-    userId: req.body.userId
-  }), function (err, rows) {
-    if (err) {
-      console.log(err);
+  connection.query(_mysql2.default.format(highlights.insert, [req.body.id, req.body.start, req.body.end, req.body.class, req.body.container, req.body.documentId, req.body.userId]), function (error, results, fields) {
+    if (error) {
+      console.log(error);
       res.sendStatus(500);
       return;
     }
-    console.log(rows);
+    console.log(results);
     res.sendStatus(200);
   });
 });
 
 app.get('/documents/download/:id', function (req, res) {
-  mariaDB.query(documents.selectById({ id: req.params.id }), function (err, rows) {
-    if (err) {
-      console.log(err);
+  console.log(_mysql2.default.format(documents.selectById, [req.params.id]));
+  connection.query(_mysql2.default.format(documents.selectById, [req.params.id]), function (error, results, fields) {
+    if (error) {
+      console.log(error);
       res.sendStatus(500);
       return;
     }
-    console.log(rows);
-    res.download(rows[0].path);
+    console.log(results);
+    res.download(results[0].path);
   });
 });
 
 app.post('/documents/update/:id', function (req, res) {
-  mariaDB.query(documents.update({ title: req.body.title, id: req.params.id }), function (err, rows) {
-    if (err) {
-      console.log(err);
+  connection.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id]), function (error, results, fields) {
+    if (error) {
+      console.log(error);
       res.sendStatus(500);
       return;
     }
-    console.log(rows);
-    res.json(rows);
+    console.log(results);
+    res.json(results);
   });
 });
 
 app.get('/documents/:id', function (req, res) {
-  mariaDB.query(documents.selectById({ id: req.params.id }), function (err, rows) {
-    if (err) {
-      console.log(err);
+  connection.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.id, 10)]), function (error, results, fields) {
+    if (error) {
+      console.log(error);
       res.sendStatus(500);
       return;
     }
-    console.log(rows);
-    res.json(rows);
+    console.log(results);
+    res.json(results);
   });
 });
 
 app.get('/documents', function (req, res) {
-  mariaDB.query(documents.selectAll(), function (err, rows) {
-    if (err) {
-      console.log(err);
+  connection.query(documents.selectAll, function (error, results, field) {
+    if (error) {
+      console.log(error);
       res.sendStatus(500);
       return;
     }
-    console.log(rows);
-    res.json(rows);
+    console.log(results);
+    res.json(results);
   });
 });
 
 app.post('/upload', upload.single('doc'), function (req, res) {
   var file = req.file;
   // save document info to db
-  mariaDB.query(documents.insert({
-    id: 0,
-    title: file.originalname,
-    path: file.path,
-    type: file.mimetype,
-    encoding: file.encoding
-  }), function (err, rows) {
-    if (err) {
-      console.log(err);
+  connection.query(_mysql2.default.format(documents.insert, [0, file.originalname, file.path, file.mimetype, file.encoding]), function (error, results, fields) {
+    if (error) {
+      console.log(error);
       res.sendStatus(500);
       return;
     }
-    console.log(rows);
-    res.json({ id: rows.info.insertId });
+    console.log(results);
+    res.json({ id: results.insertId });
   });
 });
 
