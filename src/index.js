@@ -15,6 +15,7 @@ let upload = multer({ dest: 'uploads/' });
 
 
 let dbUrl = process.env.DATABASE_URL;
+console.log('DATABASE_URL', dbUrl);
 let connection;
 if (dbUrl) {
   connection = mysql.createConnection(dbUrl);
