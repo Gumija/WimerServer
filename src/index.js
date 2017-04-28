@@ -217,7 +217,8 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
-  console.log('--------- INDEX.HTML path:',path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
+  console.log("dirname:", __dirname)
+  console.log('--------- INDEX.HTML path:',path.resolve('__dirname', '..', 'WimerReact/build', 'index.html'));
   res.sendFile(path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
 });
 
