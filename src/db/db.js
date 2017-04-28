@@ -5,7 +5,6 @@ export default class DbInitializer {
     this.connection = connection;
   }
   initDB = () => {
-    this.connection.connect();  
     this.initTables();
   }
 
@@ -48,7 +47,6 @@ export default class DbInitializer {
       PRIMARY KEY (`id`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;",
           () => {
-            this.connection.end();
             console.log('Initiing finished!');
           }
         )));
