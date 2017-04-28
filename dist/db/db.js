@@ -13,7 +13,7 @@ var DbInitializer = function DbInitializer(connection) {
 
   this.initDB = function () {
     _this.connection.connect();
-    _this.initSchema();
+    _this.initTables();
   };
 
   this.initSchema = function () {

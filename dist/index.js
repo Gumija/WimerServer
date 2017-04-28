@@ -50,6 +50,7 @@ var app = (0, _express2.default)();
 var upload = (0, _multer2.default)({ dest: 'uploads/' });
 
 var dbUrl = process.env.DATABASE_URL;
+console.log('DATABASE_URL', dbUrl);
 var connection = void 0;
 if (dbUrl) {
   connection = _mysql2.default.createConnection(dbUrl);
@@ -58,34 +59,34 @@ if (dbUrl) {
     host: 'localhost',
     user: 'root',
     password: 'root',
-    flags: 'NO_SCHEMA'
+    database: 'wimer'
   });
 }
 var dbIniter = new _db2.default(connection);
 dbIniter.initDB();
 
 var documents = {
-  insert: 'INSERT INTO wimer.documents \
+  insert: 'INSERT INTO documents \
      VALUES (?, ?, ?, ?, ?)',
   selectAll: 'SELECT * \
-     FROM wimer.documents',
+     FROM documents',
   selectById: 'SELECT * \
-     FROM wimer.documents \
+     FROM documents \
      WHERE id = ?',
-  update: 'UPDATE wimer.documents \
+  update: 'UPDATE documents \
      SET title = ? \
      WHERE id = ?'
 };
 
 var highlights = {
-  insert: 'INSERT INTO wimer.highlights \
+  insert: 'INSERT INTO highlights \
      VALUES (?, ?, ?, ?, ?, ?, ?)',
-  delete: 'DELETE FROM wimer.highlights \
+  delete: 'DELETE FROM highlights \
      WHERE id = ? \
      AND document_id = ? \
      AND user_id = ?',
   selectByDocumentAndUser: 'SELECT * \
-     FROM wimer.highlights \
+     FROM highlights \
      WHERE document_id = ? \
      AND user_id = ?'
 };
