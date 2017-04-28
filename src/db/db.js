@@ -6,7 +6,7 @@ export default class DbInitializer {
   }
   initDB = () => {
     this.connection.connect();  
-    this.initSchema();
+    this.initTables();
   }
 
   initSchema = () => {

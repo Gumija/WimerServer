@@ -23,41 +23,41 @@ if (dbUrl) {
     host: 'localhost',
     user: 'root',
     password: 'root',
-    flags: 'NO_SCHEMA'
+    database: 'wimer'
   })
 }
 let dbIniter = new DbIniter(connection);
-// dbIniter.initDB();
+dbIniter.initDB();
 
 let documents = {
   insert:
-  'INSERT INTO wimer.documents \
+  'INSERT INTO documents \
      VALUES (?, ?, ?, ?, ?)',
   selectAll:
   'SELECT * \
-     FROM wimer.documents',
+     FROM documents',
   selectById:
   'SELECT * \
-     FROM wimer.documents \
+     FROM documents \
      WHERE id = ?',
   update:
-  'UPDATE wimer.documents \
+  'UPDATE documents \
      SET title = ? \
      WHERE id = ?',
 }
 
 let highlights = {
   insert:
-  'INSERT INTO wimer.highlights \
+  'INSERT INTO highlights \
      VALUES (?, ?, ?, ?, ?, ?, ?)',
   delete:
-  'DELETE FROM wimer.highlights \
+  'DELETE FROM highlights \
      WHERE id = ? \
      AND document_id = ? \
      AND user_id = ?',
   selectByDocumentAndUser:
   'SELECT * \
-     FROM wimer.highlights \
+     FROM highlights \
      WHERE document_id = ? \
      AND user_id = ?',
 }
