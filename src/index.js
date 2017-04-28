@@ -27,7 +27,7 @@ if (dbUrl) {
   })
 }
 let dbIniter = new DbIniter(connection);
-dbIniter.initDB();
+// dbIniter.initDB();
 
 let documents = {
   insert:
