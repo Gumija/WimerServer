@@ -91,10 +91,11 @@ var highlights = {
      AND user_id = ?'
 };
 
+var buildFolderPath = dbUrl ? _path2.default.resolve(__dirname, './', 'WimerReact/build') : _path2.default.resolve(__dirname, '..', 'WimerReact/build');
 // logger
 app.use((0, _morgan2.default)(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
-app.use(_express2.default.static(_path2.default.resolve(__dirname, '..', 'WimerReact/build')));
+app.use(_express2.default.static(buildFolderPath));
 app.use(_bodyParser2.default.json());
 
 app.get('/highlight/:documentId/:userId', function (req, res) {
@@ -203,9 +204,9 @@ app.get('*', function (req, res) {
   console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
   console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
   if (dbUrl) {
-    res.sendFile(_path2.default.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
+    res.sendFile(_path2.default.resolve(buildFolderPath, 'index.html'));
   } else {
-    res.sendFile(_path2.default.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
+    res.sendFile(_path2.default.resolve(buildFolderPath, 'index.html'));
   }
 });
 

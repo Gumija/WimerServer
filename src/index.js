@@ -63,10 +63,13 @@ let highlights = {
      AND user_id = ?',
 }
 
+
+let buildFolderPath = dbUrl ? path.resolve(__dirname, './', 'WimerReact/build')
+  : path.resolve(__dirname, '..', 'WimerReact/build')
 // logger
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
-app.use(express.static(path.resolve(__dirname, '..', 'WimerReact/build')));
+app.use(express.static(buildFolderPath));
 app.use(bodyParser.json());
 
 app.get('/highlight/:documentId/:userId', (req, res) => {
@@ -214,16 +217,15 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 })
 
 
-
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
   console.log("dirname:", __dirname)
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
   if (dbUrl) {
-    res.sendFile(path.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
+    res.sendFile(path.resolve(buildFolderPath, 'index.html'));
   } else {
-    res.sendFile(path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
+    res.sendFile(path.resolve(buildFolderPath, 'index.html'));
   }
 });
 
