@@ -8,6 +8,7 @@ import multer from 'multer';
 import passport from 'passport';
 import GoogleAuth from 'passport-google-oauth2';
 import path from 'path';
+import DbIniter from './db/db';
 
 let app = express();
 let upload = multer({ dest: 'uploads/' });
@@ -15,18 +16,12 @@ let upload = multer({ dest: 'uploads/' });
 let connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
-  database: 'wimer'
+  password: 'root',
+  flags: 'NO_SCHEMA'
 })
 
-var sql = "SELECT * FROM ??";
-var inserts = ['users'];
-sql = mysql.format(sql, inserts);
-console.log(sql);
-// connection.query(sql, (error, results, fields) => {
-//   if (error) throw error;
-//   console.log('results:', results);
-// })
+let dbIniter = new DbIniter(connection);
+dbIniter.initDB();
 
 let documents = {
   insert:
@@ -161,8 +156,6 @@ app.post('/documents/update/:id', (req, res) => {
 })
 
 app.get('/documents/:id', (req, res) => {
-  console.log(typeof(req.params.id))
-  console.log(mysql.format(documents.selectById, [parseInt(req.params.id, 10)]))
   connection.query(mysql.format(documents.selectById, [parseInt(req.params.id, 10)]),
     (error, results, fields) => {
       if (error) {
