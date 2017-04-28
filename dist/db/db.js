@@ -12,7 +12,6 @@ var DbInitializer = function DbInitializer(connection) {
   _classCallCheck(this, DbInitializer);
 
   this.initDB = function () {
-    _this.connection.connect();
     _this.initTables();
   };
 
@@ -54,7 +53,6 @@ var DbInitializer = function DbInitializer(connection) {
       `google_id` varchar(45) NOT NULL,\
       PRIMARY KEY (`id`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;", function () {
-          _this.connection.end();
           console.log('Initiing finished!');
         });
       });
