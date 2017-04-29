@@ -282,7 +282,7 @@ app.get('*', (req, res) => {
   console.log("dirname:", __dirname)
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
-  if (dbUrl) {
+  if (process.env.DATABASE_URL) {
     res.sendFile(path.resolve(buildFolderPath, 'index.html'));
   } else {
     res.sendFile(path.resolve(buildFolderPath, 'index.html'));
