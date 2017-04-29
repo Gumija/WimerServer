@@ -32,7 +32,7 @@ var _passport = require('passport');
 
 var _passport2 = _interopRequireDefault(_passport);
 
-var _passportGoogleOauth = require('passport-google-oauth2');
+var _passportGoogleOauth = require('passport-google-oauth');
 
 var _passportGoogleOauth2 = _interopRequireDefault(_passportGoogleOauth);
 
@@ -72,29 +72,20 @@ _passport2.default.deserializeUser(function (obj, done) {
 //   Strategies in Passport require a `verify` function, which accept
 //   credentials (in this case, an accessToken, refreshToken, and Google
 //   profile), and invoke a callback with a user object.
-_passport2.default.use(new _passportGoogleOauth2.default.Strategy({
+_passport2.default.use(new _passportGoogleOauth2.default.OAuth2Strategy({
   clientID: GOOGLE_CLIENT_ID,
   clientSecret: GOOGLE_CLIENT_SECRET,
-  //NOTE :
-  //Carefull ! and avoid usage of Private IP, otherwise you will get the device_id device_name issue for Private IP during authentication
-  //The workaround is to set up thru the google cloud console a fully qualified domain name such as http://mydomain:3000/ 
-  //then edit your /etc/hosts local file to point on your private IP. 
-  //Also both sign-in button + callbackURL has to be share the same url, otherwise two cookies will be created and lead to lost your session
-  //if you use it.
   callbackURL: "http://morning-stream-82096.herokuapp.com/auth/google/callback",
   passReqToCallback: true
 }, function (request, accessToken, refreshToken, profile, done) {
-  // asynchronous verification, for effect...
   console.log('verificatoin???', accessToken, refreshToken, profile, done);
-  process.nextTick(function () {
 
-    // To keep the example simple, the user's Google profile is returned to
-    // represent the logged-in user.  In a typical application, you would want
-    // to associate the Google account with a user record in your database,
-    // and return that user instead.
-    console.log('Profile', profile);
-    return done(null, profile);
-  });
+  // To keep the example simple, the user's Google profile is returned to
+  // represent the logged-in user.  In a typical application, you would want
+  // to associate the Google account with a user record in your database,
+  // and return that user instead.
+  console.log('Profile', profile);
+  return done(null, profile);
 }));
 
 var dbIniter = new _db2.default();
@@ -159,10 +150,9 @@ app.get('/auth/google', _passport2.default.authenticate('google', {
 //   request.  If authentication fails, the user will be redirected back to the
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
-app.get('/auth/google/callback', _passport2.default.authenticate('google', {
-  successRedirect: '/',
-  failureRedirect: '/login'
-}));
+app.get('/auth/google/callback', _passport2.default.authenticate('google', { failureRedirect: '/login' }), function (req, res) {
+  res.redirect('/');
+});
 
 app.get('/highlight/:documentId/:userId', function (req, res) {
   dbIniter.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
@@ -241,6 +231,7 @@ app.get('/documents/:id', function (req, res) {
 app.get('/documents', function (req, res) {
   console.log('------ Session', req.session);
   console.log('Auth: ', req.isAuthenticated());
+  console.log('User: ', req.user);
   dbIniter.query(documents.selectAll, function (error, results, field) {
     if (error) {
       console.log(error);
