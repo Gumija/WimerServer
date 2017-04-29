@@ -264,25 +264,27 @@ app.get('/documents/:id', (req, res) => {
   )
 })
 
-app.get('/documents', (req, res) => {
-  console.log('------ Session', req.session);
-  console.log('------ SessionIdName: ', req.session.sessonIdName)
-  console.log('------ Cookies: ', req.cookies)
-  console.log('------ Signed Cookies: ', req.signedCookies)
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
-  dbIniter.query(documents.selectAll,
-    (error, results, field) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
+app.get('/documents',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    console.log('------ Session', req.session);
+    console.log('------ SessionIdName: ', req.session.sessonIdName)
+    console.log('------ Cookies: ', req.cookies)
+    console.log('------ Signed Cookies: ', req.signedCookies)
+    console.log('Auth: ', req.isAuthenticated());
+    console.log('User: ', req.user);
+    dbIniter.query(documents.selectAll,
+      (error, results, field) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(results);
+        res.json(results);
       }
-      console.log(results);
-      res.json(results);
-    }
-  )
-})
+    )
+  })
 
 app.post('/upload', upload.single('doc'), (req, res) => {
   let file = req.file;

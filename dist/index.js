@@ -251,7 +251,7 @@ app.get('/documents/:id', function (req, res) {
   });
 });
 
-app.get('/documents', function (req, res) {
+app.get('/documents', _passport2.default.authenticate('google', { failureRedirect: '/login' }), function (req, res) {
   console.log('------ Session', req.session);
   console.log('------ SessionIdName: ', req.session.sessonIdName);
   console.log('------ Cookies: ', req.cookies);
