@@ -23,10 +23,12 @@ console.log('GOOGLE STUFF:', GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
 //   have a database of user records, the complete Google profile is
 //   serialized and deserialized.
 passport.serializeUser(function (user, done) {
+  console.log('Serialize', user);
   done(null, user);
 });
 
 passport.deserializeUser(function (obj, done) {
+  console.log('Deserialize', obj);
   done(null, obj);
 });
 
@@ -48,12 +50,14 @@ passport.use(new GoogleAuth.Strategy({
 },
   function (request, accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...
+    console.log('verificatoin???', request, accessToken, refreshToken, profile, done);
     process.nextTick(function () {
 
       // To keep the example simple, the user's Google profile is returned to
       // represent the logged-in user.  In a typical application, you would want
       // to associate the Google account with a user record in your database,
       // and return that user instead.
+      console.log('Profile', profile)
       return done(null, profile);
     });
   }
@@ -105,6 +109,13 @@ app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:htt
 // Serve static assets
 app.use(express.static(buildFolderPath));
 app.use(bodyParser.json());
+app.use( session({ 
+	secret: 'cookie_secret',
+	name:   'sessonIdName',
+	proxy:  true,
+    resave: true,
+    saveUninitialized: true
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -279,6 +290,9 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
+  if(req.session) {
+    console.log(req.session);
+  }
   console.log("dirname:", __dirname)
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
