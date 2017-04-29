@@ -282,7 +282,9 @@ app.post('/documents/update/:id', (req, res) => {
   )
 })
 
-app.get('/documents/:id', (req, res) => {
+app.get('/documents/:id', 
+passport.authenticate('google', { failureRedirect: '/login' }), 
+(req, res) => {
   console.log('-------- DOCUMENTS ID --------');
   console.log('Session', req.session);
   console.log('SessionIdName: ', req.session.sessonIdName)
