@@ -50,7 +50,7 @@ passport.use(new GoogleAuth.Strategy({
 },
   function (request, accessToken, refreshToken, profile, done) {
     // asynchronous verification, for effect...
-    console.log('verificatoin???', request, accessToken, refreshToken, profile, done);
+    console.log('verificatoin???', accessToken, refreshToken, profile, done);
     process.nextTick(function () {
 
       // To keep the example simple, the user's Google profile is returned to
@@ -251,6 +251,7 @@ app.get('/documents/:id', (req, res) => {
 })
 
 app.get('/documents', (req, res) => {
+    console.log('------ Session', req.session);
   dbIniter.query(documents.selectAll,
     (error, results, field) => {
       if (error) {
@@ -290,9 +291,7 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
-  if(req.session) {
-    console.log(req.session);
-  }
+    console.log('------ Session', req.session);
   console.log("dirname:", __dirname)
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
