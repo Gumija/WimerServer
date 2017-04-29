@@ -97,15 +97,10 @@ let buildFolderPath = process.env.DATABASE_URL ? path.resolve(__dirname, './', '
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
 app.use(express.static(buildFolderPath));
-app.use(cookieParser('cookie_secret'));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(session({
   secret: 'cookie_secret',
-  name: 'sessonIdName',
-  proxy: true,
-  resave: true,
-  saveUninitialized: true,
-  cookie: { secure: false }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
