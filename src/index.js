@@ -259,7 +259,7 @@ app.get('/documents', (req, res) => {
         res.sendStatus(500);
         return;
       }
-    console.log('------ Session', req.session);      
+      console.log('------ Session', req.session);      
       console.log(results);
       res.json(results);
     }
