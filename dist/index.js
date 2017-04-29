@@ -59,12 +59,12 @@ var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID,
 //   have a database of user records, the complete Google profile is
 //   serialized and deserialized.
 _passport2.default.serializeUser(function (user, done) {
-  console.log('Serialize', user);
-  done(null, user);
+  console.log('Serialize:', user.id);
+  done(null, user.id);
 });
 
 _passport2.default.deserializeUser(function (obj, done) {
-  console.log('Deserialize', obj);
+  console.log('Deserialize:', obj);
   done(null, obj);
 });
 
@@ -78,12 +78,14 @@ _passport2.default.use(new _passportGoogleOauth2.default.OAuth2Strategy({
   callbackURL: "http://morning-stream-82096.herokuapp.com/auth/google/callback",
   passReqToCallback: true
 }, function (request, accessToken, refreshToken, profile, done) {
-  // To keep the example simple, the user's Google profile is returned to
-  // represent the logged-in user.  In a typical application, you would want
-  // to associate the Google account with a user record in your database,
-  // and return that user instead.
-  console.log('Profile', profile);
-  return done(null, profile);
+  process.nextTick(function () {
+
+    // To keep the example simple, the user's Google profile is returned to
+    // represent the logged-in user.  In a typical application, you would want
+    // to associate the Google account with a user record in your database,
+    // and return that user instead.
+    return done(null, profile);
+  });
 }));
 
 var dbIniter = new _db2.default();
@@ -146,13 +148,6 @@ app.get('/auth/google', _passport2.default.authenticate('google', {
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
 app.get('/auth/google/callback', _passport2.default.authenticate('google', { failureRedirect: '/login' }), function (req, res) {
-  console.log('---------- AFTER LOGIN -----------');
-  console.log('SessionIdName: ', req.session.sessonIdName);
-  console.log('SessionId: ', req.session.id);
-  console.log('SessionId: ', req.sessionID);
-  console.log('SessionCookie: ', req.session.cookie);
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   res.redirect('/');
 });
 
@@ -171,13 +166,6 @@ app.get('/auth/google/callback', _passport2.default.authenticate('google', { fai
 
 
 app.get('/highlight/:documentId/:userId', function (req, res) {
-  console.log('-------- HIGHLIGHT GET --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName);
-  console.log('Cookies: ', req.cookies);
-  console.log('Signed Cookies: ', req.signedCookies);
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   dbIniter.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -190,13 +178,6 @@ app.get('/highlight/:documentId/:userId', function (req, res) {
 });
 
 app.delete('/highlight', function (req, res) {
-  console.log('-------- HIGHLIGHT DELETE --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName);
-  console.log('Cookies: ', req.cookies);
-  console.log('Signed Cookies: ', req.signedCookies);
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   dbIniter.query(_mysql2.default.format(highlights.delete, [req.body.id, req.body.documentId, req.body.userId]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -209,13 +190,6 @@ app.delete('/highlight', function (req, res) {
 });
 
 app.post('/highlight', function (req, res) {
-  console.log('-------- HIGHLIGHT POST --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName);
-  console.log('Cookies: ', req.cookies);
-  console.log('Signed Cookies: ', req.signedCookies);
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   // save highlight from body
   dbIniter.query(_mysql2.default.format(highlights.insert, [req.body.id, req.body.start, req.body.end, req.body.class, req.body.container, req.body.documentId, req.body.userId]), function (error, results, fields) {
     if (error) {
@@ -229,13 +203,6 @@ app.post('/highlight', function (req, res) {
 });
 
 app.get('/documents/download/:id', function (req, res) {
-  console.log('-------- DOCUMENTS DOWNLOAD ID--------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName);
-  console.log('Cookies: ', req.cookies);
-  console.log('Signed Cookies: ', req.signedCookies);
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   console.log(_mysql2.default.format(documents.selectById, [req.params.id]));
   dbIniter.query(_mysql2.default.format(documents.selectById, [req.params.id]), function (error, results, fields) {
     if (error) {
@@ -249,13 +216,6 @@ app.get('/documents/download/:id', function (req, res) {
 });
 
 app.post('/documents/update/:id', function (req, res) {
-  console.log('-------- DOCUMENTS UPDATE ID --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName);
-  console.log('Cookies: ', req.cookies);
-  console.log('Signed Cookies: ', req.signedCookies);
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   dbIniter.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -268,13 +228,6 @@ app.post('/documents/update/:id', function (req, res) {
 });
 
 app.get('/documents/:id', function (req, res) {
-  console.log('-------- DOCUMENTS ID --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName);
-  console.log('Cookies: ', req.cookies);
-  console.log('Signed Cookies: ', req.signedCookies);
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   dbIniter.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.id, 10)]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -324,7 +277,6 @@ app.post('/upload', upload.single('doc'), function (req, res) {
 
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', function (req, res) {
-  console.log('------ Session', req.session);
   console.log("dirname:", __dirname);
   console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
   console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, './', 'WimerReact/build', 'index.html'));

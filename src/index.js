@@ -23,12 +23,12 @@ var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 //   have a database of user records, the complete Google profile is
 //   serialized and deserialized.
 passport.serializeUser(function (user, done) {
-  console.log('Serialize', user);
-  done(null, user);
+  console.log('Serialize:', user.id)
+  done(null, user.id);
 });
 
 passport.deserializeUser(function (obj, done) {
-  console.log('Deserialize', obj);
+  console.log('Deserialize:', obj)
   done(null, obj);
 });
 
@@ -42,13 +42,15 @@ passport.use(new GoogleAuth.OAuth2Strategy({
   callbackURL: "http://morning-stream-82096.herokuapp.com/auth/google/callback",
   passReqToCallback: true
 },
-  function (request, accessToken, refreshToken, profile, done) {
-    // To keep the example simple, the user's Google profile is returned to
-    // represent the logged-in user.  In a typical application, you would want
-    // to associate the Google account with a user record in your database,
-    // and return that user instead.
-    console.log('Profile', profile)
-    return done(null, profile);
+  (request, accessToken, refreshToken, profile, done) => {
+    process.nextTick(() => {
+
+      // To keep the example simple, the user's Google profile is returned to
+      // represent the logged-in user.  In a typical application, you would want
+      // to associate the Google account with a user record in your database,
+      // and return that user instead.
+      return done(null, profile);
+    })
   }
 ));
 
@@ -124,13 +126,6 @@ app.get('/auth/google', passport.authenticate('google', {
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   function (req, res) {
-    console.log('---------- AFTER LOGIN -----------')
-    console.log('SessionIdName: ', req.session.sessonIdName)
-    console.log('SessionId: ', req.session.id)
-    console.log('SessionId: ', req.sessionID)
-    console.log('SessionCookie: ', req.session.cookie)
-    console.log('Auth: ', req.isAuthenticated());
-    console.log('User: ', req.user);
     res.redirect('/');
   });
 
@@ -151,13 +146,6 @@ app.get('/auth/google/callback',
 
 
 app.get('/highlight/:documentId/:userId', (req, res) => {
-  console.log('-------- HIGHLIGHT GET --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName)
-  console.log('Cookies: ', req.cookies)
-  console.log('Signed Cookies: ', req.signedCookies)
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   dbIniter.query(mysql.format(highlights.selectByDocumentAndUser,
     [
       req.params.documentId,
@@ -177,13 +165,6 @@ app.get('/highlight/:documentId/:userId', (req, res) => {
 })
 
 app.delete('/highlight', (req, res) => {
-  console.log('-------- HIGHLIGHT DELETE --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName)
-  console.log('Cookies: ', req.cookies)
-  console.log('Signed Cookies: ', req.signedCookies)
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   dbIniter.query(mysql.format(highlights.delete,
     [
       req.body.id,
@@ -204,13 +185,6 @@ app.delete('/highlight', (req, res) => {
 })
 
 app.post('/highlight', (req, res) => {
-  console.log('-------- HIGHLIGHT POST --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName)
-  console.log('Cookies: ', req.cookies)
-  console.log('Signed Cookies: ', req.signedCookies)
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   // save highlight from body
   dbIniter.query(mysql.format(highlights.insert,
     [
@@ -236,13 +210,6 @@ app.post('/highlight', (req, res) => {
 })
 
 app.get('/documents/download/:id', (req, res) => {
-  console.log('-------- DOCUMENTS DOWNLOAD ID--------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName)
-  console.log('Cookies: ', req.cookies)
-  console.log('Signed Cookies: ', req.signedCookies)
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   console.log(mysql.format(documents.selectById, [req.params.id]));
   dbIniter.query(mysql.format(documents.selectById, [req.params.id]),
     (error, results, fields) => {
@@ -258,13 +225,6 @@ app.get('/documents/download/:id', (req, res) => {
 })
 
 app.post('/documents/update/:id', (req, res) => {
-  console.log('-------- DOCUMENTS UPDATE ID --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName)
-  console.log('Cookies: ', req.cookies)
-  console.log('Signed Cookies: ', req.signedCookies)
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id]),
     (error, results, fields) => {
       if (error) {
@@ -279,13 +239,6 @@ app.post('/documents/update/:id', (req, res) => {
 })
 
 app.get('/documents/:id', (req, res) => {
-  console.log('-------- DOCUMENTS ID --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName)
-  console.log('Cookies: ', req.cookies)
-  console.log('Signed Cookies: ', req.signedCookies)
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
   dbIniter.query(mysql.format(documents.selectById, [parseInt(req.params.id, 10)]),
     (error, results, fields) => {
       if (error) {
@@ -349,7 +302,6 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
-  console.log('------ Session', req.session);
   console.log("dirname:", __dirname)
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
