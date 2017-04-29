@@ -260,6 +260,8 @@ app.get('/documents/:id', (req, res) => {
 app.get('/documents', (req, res) => {
   console.log('------ Session', req.session);
   console.log('------ SessionIdName: ', req.session.sessonIdName)  
+  console.log('------ Cookies: ', req.cookies)  
+  console.log('------ Signed Cookies: ', req.signedCookies)  
   console.log('Auth: ', req.isAuthenticated());
   console.log('User: ', req.user);
   dbIniter.query(documents.selectAll,
