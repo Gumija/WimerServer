@@ -152,23 +152,30 @@ app.get('/auth/google', _passport2.default.authenticate('google', {
 //   request.  If authentication fails, the user will be redirected back to the
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
-app.get('/auth/google/callback', _passport2.default.authenticate('google', { failureRedirect: '/login' }), function (req, res) {
-  res.redirect('/');
-});
-
-//   app.get('/auth/google/callback', function(req, res, next) {
-//   passport.authenticate('google', function(err, user, info) {
-//     console.log('User', user);
-//     console.log('Info:', info);
-//     if (err) { console.log(err); return next(err); }
-//     if (!user) { console.log('No user'); return res.redirect('/'); }
-//     req.login(user, function(err) {
-//       if (err) { console.log(err); return next(err); }
-//       return res.redirect('/');
-//     });
-//   })(req, res, next);
+// app.get('/auth/google/callback', 
+// passport.authenticate('google', { failureRedirect: '/login' }),
+// function(req, res) {
+//   res.redirect('/');
 // });
 
+app.get('/auth/google/callback', function (req, res, next) {
+  _passport2.default.authenticate('google', function (err, user, info) {
+    console.log('User:', user);
+    console.log('Info:', info);
+    if (err) {
+      console.log(err);return next(err);
+    }
+    if (!user) {
+      console.log('No user');return res.redirect('/');
+    }
+    req.login(user, function (err) {
+      if (err) {
+        console.log(err);return next(err);
+      }
+      return res.redirect('/');
+    });
+  })(req, res, next);
+});
 
 app.get('/highlight/:documentId/:userId', function (req, res) {
   dbIniter.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
