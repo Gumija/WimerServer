@@ -222,48 +222,57 @@ app.get('/highlight/:documentId/:userId', (req, res) => {
 })
 
 app.delete('/highlight', (req, res) => {
-  dbIniter.query(mysql.format(highlights.delete,
-    [
-      req.body.id,
-      req.body.documentId,
-      req.body.userId,
-    ]
-  ),
-    (error, results, fields) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
+  if (req.body.userId == req.user.id) {
+    dbIniter.query(mysql.format(highlights.delete,
+      [
+        req.body.id,
+        req.body.documentId,
+        req.body.userId,
+      ]
+    ),
+      (error, results, fields) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(fields);
+        res.sendStatus(200);
       }
-      console.log(fields);
-      res.sendStatus(200);
-    }
-  )
+    )
+  } else {
+    res.sendStatus(403); // 403 Forbidden
+  }
 })
 
 app.post('/highlight', (req, res) => {
-  // save highlight from body
-  dbIniter.query(mysql.format(highlights.insert,
-    [
-      req.body.id,
-      req.body.start,
-      req.body.end,
-      req.body.class,
-      req.body.container,
-      req.body.documentId,
-      req.body.userId,
-    ]
-  ),
-    (error, results, fields) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
+  if (req.body.userId == req.user.id) {
+
+    // save highlight from body
+    dbIniter.query(mysql.format(highlights.insert,
+      [
+        req.body.id,
+        req.body.start,
+        req.body.end,
+        req.body.class,
+        req.body.container,
+        req.body.documentId,
+        req.body.userId,
+      ]
+    ),
+      (error, results, fields) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(results);
+        res.sendStatus(200);
       }
-      console.log(results);
-      res.sendStatus(200);
-    }
-  )
+    )
+  } else {
+    res.sendStatus(403); // 403 Forbidden
+  }
 })
 
 app.get('/documents/download/:id', (req, res) => {
@@ -282,17 +291,22 @@ app.get('/documents/download/:id', (req, res) => {
 })
 
 app.post('/documents/update/:id', (req, res) => {
-  dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id]),
-    (error, results, fields) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
+  // TODO: add document owner to document
+  // if (req.body.userId == req.user.id) {
+    dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id]),
+      (error, results, fields) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(results);
+        res.json(results);
       }
-      console.log(results);
-      res.json(results);
-    }
-  )
+    )
+  // } else {
+  //   res.sendStatus(403); // 403 Forbidden
+  // }
 })
 
 app.get('/documents/:id', (req, res) => {

@@ -224,28 +224,37 @@ app.get('/highlight/:documentId/:userId', function (req, res) {
 });
 
 app.delete('/highlight', function (req, res) {
-  dbIniter.query(_mysql2.default.format(highlights.delete, [req.body.id, req.body.documentId, req.body.userId]), function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      res.sendStatus(500);
-      return;
-    }
-    console.log(fields);
-    res.sendStatus(200);
-  });
+  if (req.body.userId == req.user.id) {
+    dbIniter.query(_mysql2.default.format(highlights.delete, [req.body.id, req.body.documentId, req.body.userId]), function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
+      }
+      console.log(fields);
+      res.sendStatus(200);
+    });
+  } else {
+    res.sendStatus(403); // 403 Forbidden
+  }
 });
 
 app.post('/highlight', function (req, res) {
-  // save highlight from body
-  dbIniter.query(_mysql2.default.format(highlights.insert, [req.body.id, req.body.start, req.body.end, req.body.class, req.body.container, req.body.documentId, req.body.userId]), function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      res.sendStatus(500);
-      return;
-    }
-    console.log(results);
-    res.sendStatus(200);
-  });
+  if (req.body.userId == req.user.id) {
+
+    // save highlight from body
+    dbIniter.query(_mysql2.default.format(highlights.insert, [req.body.id, req.body.start, req.body.end, req.body.class, req.body.container, req.body.documentId, req.body.userId]), function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
+      }
+      console.log(results);
+      res.sendStatus(200);
+    });
+  } else {
+    res.sendStatus(403); // 403 Forbidden
+  }
 });
 
 app.get('/documents/download/:id', function (req, res) {
@@ -262,6 +271,8 @@ app.get('/documents/download/:id', function (req, res) {
 });
 
 app.post('/documents/update/:id', function (req, res) {
+  // TODO: add document owner to document
+  // if (req.body.userId == req.user.id) {
   dbIniter.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -271,6 +282,9 @@ app.post('/documents/update/:id', function (req, res) {
     console.log(results);
     res.json(results);
   });
+  // } else {
+  //   res.sendStatus(403); // 403 Forbidden
+  // }
 });
 
 app.get('/documents/:id', function (req, res) {
