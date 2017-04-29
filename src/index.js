@@ -128,7 +128,12 @@ passport.use(new GoogleAuth.OAuth2Strategy({
                   return;
                 }
                 console.log(`Inserted user`, results);
-                return done(null, results[0]);
+                return done(null, {
+                  id: results.insertId,
+                  name: profile.displayName,
+                  email: profile.emails.find((email) => email.type == 'account').value,
+                  google_id: profile.id,
+                });
               }
             )
           }
