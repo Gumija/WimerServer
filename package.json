@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon -w src --exec \"babel-node src --presets es2015,stage-0\"",
     "buildReact": "cd WimerReact && yarn build && cd ..",
-    "build": "cd WimerReact && yarn build && cd .. && mkdir -p dist/WimerReact && cp -r WimerReact/build dist/WimerReact/build && babel src -s -D -d dist --presets es2015,stage-0",
+    "build": "rm -rf dist && cd WimerReact && yarn build && cd .. && mkdir -p dist/WimerReact && cp -r WimerReact/build dist/WimerReact/build && babel src -s -D -d dist --presets es2015,stage-0",
     "start": "node dist",
     "prestart": "npm run -s build",
     "test": "eslint src"

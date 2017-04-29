@@ -175,6 +175,13 @@ app.get('/auth/google/callback', _passport2.default.authenticate('google', { fai
 
 
 app.get('/highlight/:documentId/:userId', function (req, res) {
+  console.log('-------- HIGHLIGHT GET --------');
+  console.log('Session', req.session);
+  console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('Cookies: ', req.cookies);
+  console.log('Signed Cookies: ', req.signedCookies);
+  console.log('Auth: ', req.isAuthenticated());
+  console.log('User: ', req.user);
   dbIniter.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -187,6 +194,13 @@ app.get('/highlight/:documentId/:userId', function (req, res) {
 });
 
 app.delete('/highlight', function (req, res) {
+  console.log('-------- HIGHLIGHT DELETE --------');
+  console.log('Session', req.session);
+  console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('Cookies: ', req.cookies);
+  console.log('Signed Cookies: ', req.signedCookies);
+  console.log('Auth: ', req.isAuthenticated());
+  console.log('User: ', req.user);
   dbIniter.query(_mysql2.default.format(highlights.delete, [req.body.id, req.body.documentId, req.body.userId]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -199,6 +213,13 @@ app.delete('/highlight', function (req, res) {
 });
 
 app.post('/highlight', function (req, res) {
+  console.log('-------- HIGHLIGHT POST --------');
+  console.log('Session', req.session);
+  console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('Cookies: ', req.cookies);
+  console.log('Signed Cookies: ', req.signedCookies);
+  console.log('Auth: ', req.isAuthenticated());
+  console.log('User: ', req.user);
   // save highlight from body
   dbIniter.query(_mysql2.default.format(highlights.insert, [req.body.id, req.body.start, req.body.end, req.body.class, req.body.container, req.body.documentId, req.body.userId]), function (error, results, fields) {
     if (error) {
@@ -212,6 +233,13 @@ app.post('/highlight', function (req, res) {
 });
 
 app.get('/documents/download/:id', function (req, res) {
+  console.log('-------- DOCUMENTS DOWNLOAD ID--------');
+  console.log('Session', req.session);
+  console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('Cookies: ', req.cookies);
+  console.log('Signed Cookies: ', req.signedCookies);
+  console.log('Auth: ', req.isAuthenticated());
+  console.log('User: ', req.user);
   console.log(_mysql2.default.format(documents.selectById, [req.params.id]));
   dbIniter.query(_mysql2.default.format(documents.selectById, [req.params.id]), function (error, results, fields) {
     if (error) {
@@ -225,6 +253,13 @@ app.get('/documents/download/:id', function (req, res) {
 });
 
 app.post('/documents/update/:id', function (req, res) {
+  console.log('-------- DOCUMENTS UPDATE ID --------');
+  console.log('Session', req.session);
+  console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('Cookies: ', req.cookies);
+  console.log('Signed Cookies: ', req.signedCookies);
+  console.log('Auth: ', req.isAuthenticated());
+  console.log('User: ', req.user);
   dbIniter.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -237,6 +272,13 @@ app.post('/documents/update/:id', function (req, res) {
 });
 
 app.get('/documents/:id', function (req, res) {
+  console.log('-------- DOCUMENTS ID --------');
+  console.log('Session', req.session);
+  console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('Cookies: ', req.cookies);
+  console.log('Signed Cookies: ', req.signedCookies);
+  console.log('Auth: ', req.isAuthenticated());
+  console.log('User: ', req.user);
   dbIniter.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.id, 10)]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -281,17 +323,6 @@ app.post('/upload', upload.single('doc'), function (req, res) {
   });
 });
 
-app.get('/', function (req, res) {
-  console.log('------ Session', req.session);
-  console.log("dirname:", __dirname);
-  console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
-  console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
-  if (process.env.DATABASE_URL) {
-    res.sendFile(_path2.default.resolve(buildFolderPath, 'index.html'));
-  } else {
-    res.sendFile(_path2.default.resolve(buildFolderPath, 'index.html'));
-  }
-});
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', function (req, res) {
   console.log('------ Session', req.session);
