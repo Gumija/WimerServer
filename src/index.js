@@ -15,48 +15,6 @@ import DbIniter from './db/db';
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
   , GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
-// Passport session setup.
-//   To support persistent login sessions, Passport needs to be able to
-//   serialize users into and deserialize users out of the session.  Typically,
-//   this will be as simple as storing the user ID when serializing, and finding
-//   the user by ID when deserializing.  However, since this example does not
-//   have a database of user records, the complete Google profile is
-//   serialized and deserialized.
-passport.serializeUser(function (user, done) {
-  console.log('Serialize:', user.id)
-  done(null, user.id);
-});
-
-passport.deserializeUser(function (obj, done) {
-  console.log('Deserialize:', obj)
-  done(null, obj);
-});
-
-// Use the GoogleStrategy within Passport.
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and Google
-//   profile), and invoke a callback with a user object.
-passport.use(new GoogleAuth.OAuth2Strategy({
-  clientID: GOOGLE_CLIENT_ID,
-  clientSecret: GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://morning-stream-82096.herokuapp.com/auth/google/callback",
-  passReqToCallback: true
-},
-  (request, accessToken, refreshToken, profile, done) => {
-    process.nextTick(() => {
-
-      // To keep the example simple, the user's Google profile is returned to
-      // represent the logged-in user.  In a typical application, you would want
-      // to associate the Google account with a user record in your database,
-      // and return that user instead.
-      return done(null, profile);
-    })
-  }
-));
-
-let dbIniter = new DbIniter();
-dbIniter.initDB();
-
 let documents = {
   insert:
   'INSERT INTO documents \
@@ -90,6 +48,98 @@ let highlights = {
      AND user_id = ?',
 }
 
+let users = {
+  selectByGoogleId:
+  'SELECT * \
+   FROM users \
+   WHERE google_id = ?',
+  selectById:
+  'SELECT * \
+   FROM users \
+   WHERE id = ?',
+  insert:
+  'INSERT INTO users \
+    VALUES (0, ?, ?, ?)'
+}
+
+let dbIniter = new DbIniter();
+dbIniter.initDB();
+
+// Passport session setup.
+//   To support persistent login sessions, Passport needs to be able to
+//   serialize users into and deserialize users out of the session.  Typically,
+//   this will be as simple as storing the user ID when serializing, and finding
+//   the user by ID when deserializing.  However, since this example does not
+//   have a database of user records, the complete Google profile is
+//   serialized and deserialized.
+passport.serializeUser(function (user, done) {
+  console.log('Serialize:', user.id)
+  done(null, user.id);
+});
+
+passport.deserializeUser(function (obj, done) {
+  dbIniter.query(mysql.format(users.selectById, [obj]),
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
+        done(error);
+        return;
+      }
+      console.log(`Deserialize user by user id, ${obj}`, results);
+      return done(null, results[0]);
+    });
+});
+
+// Use the GoogleStrategy within Passport.
+//   Strategies in Passport require a `verify` function, which accept
+//   credentials (in this case, an accessToken, refreshToken, and Google
+//   profile), and invoke a callback with a user object.
+passport.use(new GoogleAuth.OAuth2Strategy({
+  clientID: GOOGLE_CLIENT_ID,
+  clientSecret: GOOGLE_CLIENT_SECRET,
+  callbackURL: "http://morning-stream-82096.herokuapp.com/auth/google/callback",
+  passReqToCallback: true
+},
+  (request, accessToken, refreshToken, profile, done) => {
+    process.nextTick(() => {
+      // Check if user exists with google id
+      dbIniter.query(mysql.format(users.selectByGoogleId, [profile.id]),
+        (error, results, fields) => {
+          if (error) {
+            console.log(error);
+            done(error);
+            return;
+          }
+          console.log(`Get user by googleId ${profile.id}`, results);
+          if (results) {
+            return done(null, results[0]);
+          } else {
+            // Add new user to database
+            dbIniter.query(mysql.format(users.insert,
+              [
+                profile.displayName,
+                profile.emails.find((email) => email.type == 'account').value,
+                profile.id,
+              ]),
+              (error, results, fields) => {
+                if (error) {
+                  console.log(error);
+                  done(error);
+                  return;
+                }
+                console.log(`Inserted user`, results);
+                return done(null, results[0]);
+              }
+            )
+          }
+        }
+      )
+    })
+  }
+));
+
+
+
 let app = express();
 let upload = multer({ dest: 'uploads/' });
 
@@ -103,6 +153,8 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(session({
   secret: 'cookie_secret',
+  resave: true,
+  saveUninitialized: true,
 }));
 app.use(passport.initialize());
 app.use(passport.session());
