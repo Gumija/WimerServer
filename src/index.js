@@ -97,7 +97,7 @@ let buildFolderPath = process.env.DATABASE_URL ? path.resolve(__dirname, './', '
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
 app.use(express.static(buildFolderPath));
-// app.use(cookieParser('cookie_secret'));
+app.use(cookieParser('cookie_secret'));
 app.use(bodyParser.json());
 app.use(session({
   secret: 'cookie_secret',
@@ -132,6 +132,7 @@ app.get('/auth/google/callback',
     console.log('---------- AFTER LOGIN -----------')
     console.log('SessionIdName: ', req.session.sessonIdName)
     console.log('SessionId: ', req.session.id)
+    console.log('SessionId: ', req.sessionID)
     console.log('SessionCookie: ', req.session.cookie)
     console.log('Auth: ', req.isAuthenticated());
     console.log('User: ', req.user);
@@ -282,9 +283,7 @@ app.post('/documents/update/:id', (req, res) => {
   )
 })
 
-app.get('/documents/:id', 
-passport.authenticate('google', { failureRedirect: '/login' }), 
-(req, res) => {
+app.get('/documents/:id', (req, res) => {
   console.log('-------- DOCUMENTS ID --------');
   console.log('Session', req.session);
   console.log('SessionIdName: ', req.session.sessonIdName)
@@ -305,26 +304,31 @@ passport.authenticate('google', { failureRedirect: '/login' }),
   )
 })
 
-app.get('/documents', (req, res) => {
-  console.log('-------- DOCUMENTS --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName)
-  console.log('Cookies: ', req.cookies)
-  console.log('Signed Cookies: ', req.signedCookies)
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
-  dbIniter.query(documents.selectAll,
-    (error, results, field) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
+app.get('/documents',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    console.log('-------- DOCUMENTS --------');
+    console.log('Session', req.session);
+    console.log('SessionIdName: ', req.session.sessonIdName)
+    console.log('SessionId: ', req.session.id)
+    console.log('SessionId: ', req.sessionID)
+    console.log('SessionCookie: ', req.session.cookie)
+    console.log('Cookies: ', req.cookies)
+    console.log('Signed Cookies: ', req.signedCookies)
+    console.log('Auth: ', req.isAuthenticated());
+    console.log('User: ', req.user);
+    dbIniter.query(documents.selectAll,
+      (error, results, field) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(results);
+        res.json(results);
       }
-      console.log(results);
-      res.json(results);
-    }
-  )
-})
+    )
+  })
 
 app.post('/upload', upload.single('doc'), (req, res) => {
   let file = req.file;

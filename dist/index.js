@@ -123,7 +123,7 @@ var buildFolderPath = process.env.DATABASE_URL ? _path2.default.resolve(__dirnam
 app.use((0, _morgan2.default)(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
 app.use(_express2.default.static(buildFolderPath));
-// app.use(cookieParser('cookie_secret'));
+app.use((0, _cookieParser2.default)('cookie_secret'));
 app.use(_bodyParser2.default.json());
 app.use((0, _expressSession2.default)({
   secret: 'cookie_secret',
@@ -154,6 +154,7 @@ app.get('/auth/google/callback', _passport2.default.authenticate('google', { fai
   console.log('---------- AFTER LOGIN -----------');
   console.log('SessionIdName: ', req.session.sessonIdName);
   console.log('SessionId: ', req.session.id);
+  console.log('SessionId: ', req.sessionID);
   console.log('SessionCookie: ', req.session.cookie);
   console.log('Auth: ', req.isAuthenticated());
   console.log('User: ', req.user);
@@ -271,7 +272,7 @@ app.post('/documents/update/:id', function (req, res) {
   });
 });
 
-app.get('/documents/:id', _passport2.default.authenticate('google', { failureRedirect: '/login' }), function (req, res) {
+app.get('/documents/:id', function (req, res) {
   console.log('-------- DOCUMENTS ID --------');
   console.log('Session', req.session);
   console.log('SessionIdName: ', req.session.sessonIdName);
@@ -290,10 +291,13 @@ app.get('/documents/:id', _passport2.default.authenticate('google', { failureRed
   });
 });
 
-app.get('/documents', function (req, res) {
+app.get('/documents', _passport2.default.authenticate('google', { failureRedirect: '/login' }), function (req, res) {
   console.log('-------- DOCUMENTS --------');
   console.log('Session', req.session);
   console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('SessionId: ', req.session.id);
+  console.log('SessionId: ', req.sessionID);
+  console.log('SessionCookie: ', req.session.cookie);
   console.log('Cookies: ', req.cookies);
   console.log('Signed Cookies: ', req.signedCookies);
   console.log('Auth: ', req.isAuthenticated());
