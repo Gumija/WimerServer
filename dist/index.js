@@ -4,6 +4,10 @@ var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
+var _cookieParser = require('cookie-parser');
+
+var _cookieParser2 = _interopRequireDefault(_cookieParser);
+
 var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
@@ -121,6 +125,7 @@ var buildFolderPath = process.env.DATABASE_URL ? _path2.default.resolve(__dirnam
 app.use((0, _morgan2.default)(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
 app.use(_express2.default.static(buildFolderPath));
+app.use((0, _cookieParser2.default)('cookie_secret'));
 app.use(_bodyParser2.default.json());
 app.use((0, _expressSession2.default)({
   secret: 'cookie_secret',

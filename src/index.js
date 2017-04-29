@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import express from 'express';
 import session from 'express-session';
 import morgan from 'morgan';
@@ -98,6 +99,7 @@ let buildFolderPath = process.env.DATABASE_URL ? path.resolve(__dirname, './', '
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
 app.use(express.static(buildFolderPath));
+app.use(cookieParser('cookie_secret'));
 app.use(bodyParser.json());
 app.use(session({
   secret: 'cookie_secret',
