@@ -4,14 +4,43 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _mysql = require('mysql');
+
+var _mysql2 = _interopRequireDefault(_mysql);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var DbInitializer = function DbInitializer(connection) {
+var DbInitializer = function DbInitializer() {
   var _this = this;
 
   _classCallCheck(this, DbInitializer);
 
+  this.setupConnection = function () {
+    if (_this.connection == null) {
+      var dbUrl = process.env.DATABASE_URL;
+      console.log('DATABASE_URL', dbUrl);
+      if (dbUrl) {
+        _this.connection = _mysql2.default.createConnection(dbUrl);
+      } else {
+        _this.connection = _mysql2.default.createConnection({
+          host: 'localhost',
+          user: 'root',
+          password: 'root',
+          database: 'wimer'
+        });
+      }
+    }
+    _this.connection.on('error', function (err) {
+      console.log('Connection Error:', err);
+      _this.connection = null;
+      _this.setupConnection();
+    });
+  };
+
   this.initDB = function () {
+    _this.setupConnection();
     _this.initTables();
   };
 
@@ -25,7 +54,7 @@ var DbInitializer = function DbInitializer(connection) {
 
   this.initTables = function () {
     console.log('Initing db.');
-    _this.query("\
+    _this.queryWithConnection("\
       CREATE TABLE IF NOT EXISTS `documents` (\
       `id` int(11) NOT NULL AUTO_INCREMENT,\
       `title` varchar(255) NOT NULL,\
@@ -34,7 +63,7 @@ var DbInitializer = function DbInitializer(connection) {
       `encoding` varchar(45) NOT NULL,\
       PRIMARY KEY (`id`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1", function () {
-      return _this.query("\
+      return _this.queryWithConnection("\
       CREATE TABLE IF NOT EXISTS `highlights` (\
       `id` int(11) NOT NULL AUTO_INCREMENT,\
       `start` int(11) NOT NULL,\
@@ -45,7 +74,7 @@ var DbInitializer = function DbInitializer(connection) {
       `user_id` int(11) NOT NULL,\
       PRIMARY KEY (`id`,`document_id`,`user_id`)\
     ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;", function () {
-        return _this.query("\
+        return _this.queryWithConnection("\
       CREATE TABLE IF NOT EXISTS `users` (\
       `id` int(11) NOT NULL AUTO_INCREMENT,\
       `name` varchar(255) NOT NULL,\
@@ -53,20 +82,29 @@ var DbInitializer = function DbInitializer(connection) {
       `google_id` varchar(45) NOT NULL,\
       PRIMARY KEY (`id`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;", function () {
+          // this.connection.end();
           console.log('Initiing finished!');
         });
       });
     });
   };
 
-  this.query = function (queryString, nextQuery) {
+  this.queryWithConnection = function (queryString, nextQuery) {
     _this.connection.query({ sql: queryString }, function (error, results, fields) {
       if (error) console.log(error);
       if (nextQuery) nextQuery();
     });
   };
 
-  this.connection = connection;
+  this.query = function (queryString, callback) {
+    // this.connection.connect();
+    _this.connection.query({ sql: queryString }, function (error, results, fields) {
+      callback(error, results, fields);
+      // this.connection.end();
+    });
+  };
+
+  this.connection = null;
 };
 
 exports.default = DbInitializer;

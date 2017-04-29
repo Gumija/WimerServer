@@ -2,8 +2,8 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import session from 'express-session';
-import mysql from 'mysql';
 import morgan from 'morgan';
+import mysql from 'mysql';
 import multer from 'multer';
 import passport from 'passport';
 import GoogleAuth from 'passport-google-oauth2';
@@ -14,20 +14,7 @@ let app = express();
 let upload = multer({ dest: 'uploads/' });
 
 
-let dbUrl = process.env.DATABASE_URL;
-console.log('DATABASE_URL', dbUrl);
-let connection;
-if (dbUrl) {
-  connection = mysql.createConnection(dbUrl);
-} else {
-  connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'wimer'
-  })
-}
-let dbIniter = new DbIniter(connection);
+let dbIniter = new DbIniter();
 dbIniter.initDB();
 
 let documents = {
@@ -64,7 +51,7 @@ let highlights = {
 }
 
 
-let buildFolderPath = dbUrl ? path.resolve(__dirname, './', 'WimerReact/build')
+let buildFolderPath = process.env.DATABASE_URL ? path.resolve(__dirname, './', 'WimerReact/build')
   : path.resolve(__dirname, '..', 'WimerReact/build')
 // logger
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
@@ -73,7 +60,7 @@ app.use(express.static(buildFolderPath));
 app.use(bodyParser.json());
 
 app.get('/highlight/:documentId/:userId', (req, res) => {
-  connection.query(mysql.format(highlights.selectByDocumentAndUser,
+  dbIniter.query(mysql.format(highlights.selectByDocumentAndUser,
     [
       req.params.documentId,
       req.params.userId,
@@ -92,7 +79,7 @@ app.get('/highlight/:documentId/:userId', (req, res) => {
 })
 
 app.delete('/highlight', (req, res) => {
-  connection.query(mysql.format(highlights.delete,
+  dbIniter.query(mysql.format(highlights.delete,
     [
       req.body.id,
       req.body.documentId,
@@ -113,7 +100,7 @@ app.delete('/highlight', (req, res) => {
 
 app.post('/highlight', (req, res) => {
   // save highlight from body
-  connection.query(mysql.format(highlights.insert,
+  dbIniter.query(mysql.format(highlights.insert,
     [
       req.body.id,
       req.body.start,
@@ -138,7 +125,7 @@ app.post('/highlight', (req, res) => {
 
 app.get('/documents/download/:id', (req, res) => {
   console.log(mysql.format(documents.selectById, [req.params.id]));
-  connection.query(mysql.format(documents.selectById, [req.params.id]),
+  dbIniter.query(mysql.format(documents.selectById, [req.params.id]),
     (error, results, fields) => {
       if (error) {
         console.log(error);
@@ -152,7 +139,7 @@ app.get('/documents/download/:id', (req, res) => {
 })
 
 app.post('/documents/update/:id', (req, res) => {
-  connection.query(mysql.format(documents.update, [req.body.title, req.params.id]),
+  dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id]),
     (error, results, fields) => {
       if (error) {
         console.log(error);
@@ -166,7 +153,7 @@ app.post('/documents/update/:id', (req, res) => {
 })
 
 app.get('/documents/:id', (req, res) => {
-  connection.query(mysql.format(documents.selectById, [parseInt(req.params.id, 10)]),
+  dbIniter.query(mysql.format(documents.selectById, [parseInt(req.params.id, 10)]),
     (error, results, fields) => {
       if (error) {
         console.log(error);
@@ -180,7 +167,7 @@ app.get('/documents/:id', (req, res) => {
 })
 
 app.get('/documents', (req, res) => {
-  connection.query(documents.selectAll,
+  dbIniter.query(documents.selectAll,
     (error, results, field) => {
       if (error) {
         console.log(error);
@@ -196,7 +183,7 @@ app.get('/documents', (req, res) => {
 app.post('/upload', upload.single('doc'), (req, res) => {
   let file = req.file;
   // save document info to db
-  connection.query(mysql.format(documents.insert,
+  dbIniter.query(mysql.format(documents.insert,
     [
       0,
       file.originalname,

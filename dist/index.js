@@ -16,13 +16,13 @@ var _expressSession = require('express-session');
 
 var _expressSession2 = _interopRequireDefault(_expressSession);
 
-var _mysql = require('mysql');
-
-var _mysql2 = _interopRequireDefault(_mysql);
-
 var _morgan = require('morgan');
 
 var _morgan2 = _interopRequireDefault(_morgan);
+
+var _mysql = require('mysql');
+
+var _mysql2 = _interopRequireDefault(_mysql);
 
 var _multer = require('multer');
 
@@ -49,20 +49,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var app = (0, _express2.default)();
 var upload = (0, _multer2.default)({ dest: 'uploads/' });
 
-var dbUrl = process.env.DATABASE_URL;
-console.log('DATABASE_URL', dbUrl);
-var connection = void 0;
-if (dbUrl) {
-  connection = _mysql2.default.createConnection(dbUrl);
-} else {
-  connection = _mysql2.default.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'wimer'
-  });
-}
-var dbIniter = new _db2.default(connection);
+var dbIniter = new _db2.default();
 dbIniter.initDB();
 
 var documents = {
@@ -91,7 +78,7 @@ var highlights = {
      AND user_id = ?'
 };
 
-var buildFolderPath = dbUrl ? _path2.default.resolve(__dirname, './', 'WimerReact/build') : _path2.default.resolve(__dirname, '..', 'WimerReact/build');
+var buildFolderPath = process.env.DATABASE_URL ? _path2.default.resolve(__dirname, './', 'WimerReact/build') : _path2.default.resolve(__dirname, '..', 'WimerReact/build');
 // logger
 app.use((0, _morgan2.default)(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
@@ -99,7 +86,7 @@ app.use(_express2.default.static(buildFolderPath));
 app.use(_bodyParser2.default.json());
 
 app.get('/highlight/:documentId/:userId', function (req, res) {
-  connection.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
+  dbIniter.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
@@ -111,7 +98,7 @@ app.get('/highlight/:documentId/:userId', function (req, res) {
 });
 
 app.delete('/highlight', function (req, res) {
-  connection.query(_mysql2.default.format(highlights.delete, [req.body.id, req.body.documentId, req.body.userId]), function (error, results, fields) {
+  dbIniter.query(_mysql2.default.format(highlights.delete, [req.body.id, req.body.documentId, req.body.userId]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
@@ -124,7 +111,7 @@ app.delete('/highlight', function (req, res) {
 
 app.post('/highlight', function (req, res) {
   // save highlight from body
-  connection.query(_mysql2.default.format(highlights.insert, [req.body.id, req.body.start, req.body.end, req.body.class, req.body.container, req.body.documentId, req.body.userId]), function (error, results, fields) {
+  dbIniter.query(_mysql2.default.format(highlights.insert, [req.body.id, req.body.start, req.body.end, req.body.class, req.body.container, req.body.documentId, req.body.userId]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
@@ -137,7 +124,7 @@ app.post('/highlight', function (req, res) {
 
 app.get('/documents/download/:id', function (req, res) {
   console.log(_mysql2.default.format(documents.selectById, [req.params.id]));
-  connection.query(_mysql2.default.format(documents.selectById, [req.params.id]), function (error, results, fields) {
+  dbIniter.query(_mysql2.default.format(documents.selectById, [req.params.id]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
@@ -149,7 +136,7 @@ app.get('/documents/download/:id', function (req, res) {
 });
 
 app.post('/documents/update/:id', function (req, res) {
-  connection.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id]), function (error, results, fields) {
+  dbIniter.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
@@ -161,7 +148,7 @@ app.post('/documents/update/:id', function (req, res) {
 });
 
 app.get('/documents/:id', function (req, res) {
-  connection.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.id, 10)]), function (error, results, fields) {
+  dbIniter.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.id, 10)]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
@@ -173,7 +160,7 @@ app.get('/documents/:id', function (req, res) {
 });
 
 app.get('/documents', function (req, res) {
-  connection.query(documents.selectAll, function (error, results, field) {
+  dbIniter.query(documents.selectAll, function (error, results, field) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
@@ -187,7 +174,7 @@ app.get('/documents', function (req, res) {
 app.post('/upload', upload.single('doc'), function (req, res) {
   var file = req.file;
   // save document info to db
-  connection.query(_mysql2.default.format(documents.insert, [0, file.originalname, file.path, file.mimetype, file.encoding]), function (error, results, fields) {
+  dbIniter.query(_mysql2.default.format(documents.insert, [0, file.originalname, file.path, file.mimetype, file.encoding]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
