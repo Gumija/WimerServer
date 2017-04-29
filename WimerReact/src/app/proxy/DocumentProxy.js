@@ -1,7 +1,9 @@
 
 class DocumentProxy {
   getDocuments = async () => {
-    let res = await fetch('/documents');
+    let res = await fetch('/documents',{
+      credentials: 'include'
+    });
     return await res.json();
   }
 

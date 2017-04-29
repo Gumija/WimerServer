@@ -157,7 +157,7 @@ app.get('/auth/google/callback', _passport2.default.authenticate('google', { fai
   console.log('SessionCookie: ', req.session.cookie);
   console.log('Auth: ', req.isAuthenticated());
   console.log('User: ', req.user);
-  res.send('Hello');
+  res.redirect('/');
 });
 
 //   app.get('/auth/google/callback', function(req, res, next) {
