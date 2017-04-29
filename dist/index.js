@@ -246,6 +246,7 @@ app.get('/documents/:id', function (req, res) {
 
 app.get('/documents', function (req, res) {
   console.log('------ Session', req.session);
+  console.log('------ SessionIdName: ', req.session.sessonIdName);
   console.log('Auth: ', req.isAuthenticated());
   console.log('User: ', req.user);
   dbIniter.query(documents.selectAll, function (error, results, field) {
@@ -254,7 +255,6 @@ app.get('/documents', function (req, res) {
       res.sendStatus(500);
       return;
     }
-    console.log('------ Session', req.session);
     console.log(results);
     res.json(results);
   });
@@ -277,7 +277,6 @@ app.post('/upload', upload.single('doc'), function (req, res) {
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', function (req, res) {
   console.log('------ Session', req.session);
-  console.log('------ SessionIdName: ', req.session.sessonIdName);
   console.log("dirname:", __dirname);
   console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
   console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
