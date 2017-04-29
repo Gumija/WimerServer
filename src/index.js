@@ -265,7 +265,11 @@ app.get('/documents/:id', (req, res) => {
 })
 
 app.get('/documents',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', {
+    scope: [
+      'https://www.googleapis.com/auth/plus.login',
+      'https://www.googleapis.com/auth/plus.profile.emails.read']
+  }),
   (req, res) => {
     console.log('------ Session', req.session);
     console.log('------ SessionIdName: ', req.session.sessonIdName)
