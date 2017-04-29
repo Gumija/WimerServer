@@ -305,7 +305,17 @@ app.post('/upload', upload.single('doc'), (req, res) => {
   )
 })
 
-
+app.get('/', (req, res) => {
+  console.log('------ Session', req.session);
+  console.log("dirname:", __dirname)
+  console.log('--------- INDEX.HTML path:', path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
+  console.log('--------- INDEX.HTML path:', path.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
+  if (process.env.DATABASE_URL) {
+    res.sendFile(path.resolve(buildFolderPath, 'index.html'));
+  } else {
+    res.sendFile(path.resolve(buildFolderPath, 'index.html'));
+  }
+});
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
   console.log('------ Session', req.session);

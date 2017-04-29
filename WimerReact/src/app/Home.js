@@ -41,7 +41,7 @@ export default class Home extends Component {
       console.log('req', req);
 
       let res = await fetch(req, {
-        credentials: 'same-origin'
+        credentials: 'include'
       })
       let json = await res.json()
 

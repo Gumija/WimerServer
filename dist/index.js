@@ -281,6 +281,17 @@ app.post('/upload', upload.single('doc'), function (req, res) {
   });
 });
 
+app.get('/', function (req, res) {
+  console.log('------ Session', req.session);
+  console.log("dirname:", __dirname);
+  console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
+  console.log('--------- INDEX.HTML path:', _path2.default.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
+  if (process.env.DATABASE_URL) {
+    res.sendFile(_path2.default.resolve(buildFolderPath, 'index.html'));
+  } else {
+    res.sendFile(_path2.default.resolve(buildFolderPath, 'index.html'));
+  }
+});
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', function (req, res) {
   console.log('------ Session', req.session);

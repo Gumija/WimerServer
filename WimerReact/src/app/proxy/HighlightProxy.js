@@ -7,7 +7,7 @@ class HighlightProxy {
       headers: {
         "Content-Type": "application/json"
       },
-      credentials: 'same-origin',
+      credentials: 'include',
       body: JSON.stringify(hl),
     })
   }
@@ -18,14 +18,14 @@ class HighlightProxy {
       headers: {
         "Content-Type": "application/json"
       },
-      credentials: 'same-origin',
+      credentials: 'include',
       body: JSON.stringify(hl),
     })
   }
 
   getHighlights = async (documentId, userId) => {
     let res = await fetch(`/highlight/${documentId}/${userId}`,{
-      credentials: 'same-origin'
+      credentials: 'include'
     })
     return await res.json();
   }

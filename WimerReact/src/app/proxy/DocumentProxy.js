@@ -2,21 +2,21 @@
 class DocumentProxy {
   getDocuments = async () => {
     let res = await fetch('/documents',{
-      credentials: 'same-origin'
+      credentials: 'include'
     });
     return await res.json();
   }
 
   getDocument = async (id) => {
     let res = await fetch(`/documents/${id}`,{
-      credentials: 'same-origin'
+      credentials: 'include'
     });
     return await res.json();
   }
 
   getFile = async (id) => {
     let res = await fetch(`/documents/download/${id}`,{
-      credentials: 'same-origin'
+      credentials: 'include'
     });
     return await res.text();
   }
@@ -27,7 +27,7 @@ class DocumentProxy {
       headers: {
         "Content-Type": "application/json"
       },
-      credentials: 'same-origin',
+      credentials: 'include',
       body: JSON.stringify({ title: title }),
     })
   }
