@@ -240,6 +240,7 @@ app.get('/documents/:id', function (req, res) {
 
 app.get('/documents', function (req, res) {
   console.log('------ Session', req.session);
+  console.log('Auth: ', req.isAuthenticated());
   dbIniter.query(documents.selectAll, function (error, results, field) {
     if (error) {
       console.log(error);

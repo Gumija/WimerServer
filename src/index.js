@@ -109,12 +109,12 @@ app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:htt
 // Serve static assets
 app.use(express.static(buildFolderPath));
 app.use(bodyParser.json());
-app.use( session({ 
-	secret: 'cookie_secret',
-	name:   'sessonIdName',
-	proxy:  true,
-    resave: true,
-    saveUninitialized: true
+app.use(session({
+  secret: 'cookie_secret',
+  name: 'sessonIdName',
+  proxy: true,
+  resave: true,
+  saveUninitialized: true
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -251,7 +251,8 @@ app.get('/documents/:id', (req, res) => {
 })
 
 app.get('/documents', (req, res) => {
-    console.log('------ Session', req.session);
+  console.log('------ Session', req.session);
+  console.log('Auth: ', req.isAuthenticated());
   dbIniter.query(documents.selectAll,
     (error, results, field) => {
       if (error) {
@@ -259,7 +260,7 @@ app.get('/documents', (req, res) => {
         res.sendStatus(500);
         return;
       }
-      console.log('------ Session', req.session);      
+      console.log('------ Session', req.session);
       console.log(results);
       res.json(results);
     }
@@ -292,7 +293,7 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
-    console.log('------ Session', req.session);
+  console.log('------ Session', req.session);
   console.log("dirname:", __dirname)
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, '..', 'WimerReact/build', 'index.html'));
   console.log('--------- INDEX.HTML path:', path.resolve(__dirname, './', 'WimerReact/build', 'index.html'));
