@@ -249,10 +249,11 @@ app.get('/documents/:id', function (req, res) {
 });
 
 app.get('/documents', function (req, res) {
-  console.log('------ Session', req.session);
-  console.log('------ SessionIdName: ', req.session.sessonIdName);
-  console.log('------ Cookies: ', req.cookies);
-  console.log('------ Signed Cookies: ', req.signedCookies);
+  console.log('-------- DOCUMENTS --------');
+  console.log('Session', req.session);
+  console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('Cookies: ', req.cookies);
+  console.log('Signed Cookies: ', req.signedCookies);
   console.log('Auth: ', req.isAuthenticated());
   console.log('User: ', req.user);
   dbIniter.query(documents.selectAll, function (error, results, field) {
