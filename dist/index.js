@@ -127,7 +127,8 @@ app.use((0, _expressSession2.default)({
   name: 'sessonIdName',
   proxy: true,
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: { secure: false }
 }));
 app.use(_passport2.default.initialize());
 app.use(_passport2.default.session());
