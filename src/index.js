@@ -14,7 +14,7 @@ import DbIniter from './db/db';
 // https://code.google.com/apis/console/
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
   , GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-console.log('GOOGLE STUFF:', GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
+
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
 //   serialize users into and deserialize users out of the session.  Typically,
@@ -43,8 +43,6 @@ passport.use(new GoogleAuth.OAuth2Strategy({
   passReqToCallback: true
 },
   function (request, accessToken, refreshToken, profile, done) {
-    console.log('verificatoin???', accessToken, refreshToken, profile, done);
-
     // To keep the example simple, the user's Google profile is returned to
     // represent the logged-in user.  In a typical application, you would want
     // to associate the Google account with a user record in your database,
@@ -99,7 +97,7 @@ let buildFolderPath = process.env.DATABASE_URL ? path.resolve(__dirname, './', '
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
 app.use(express.static(buildFolderPath));
-app.use(cookieParser('cookie_secret'));
+// app.use(cookieParser('cookie_secret'));
 app.use(bodyParser.json());
 app.use(session({
   secret: 'cookie_secret',
@@ -132,13 +130,12 @@ app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   function (req, res) {
     console.log('---------- AFTER LOGIN -----------')
-    console.log('------ Session', req.session);
-    console.log('------ SessionIdName: ', req.session.sessonIdName)
-    console.log('------ Cookies: ', req.cookies)
-    console.log('------ Signed Cookies: ', req.signedCookies)
+    console.log('SessionIdName: ', req.session.sessonIdName)
+    console.log('SessionId: ', req.session.id)
+    console.log('SessionCookie: ', req.session.cookie)
     console.log('Auth: ', req.isAuthenticated());
     console.log('User: ', req.user);
-    res.redirect('/');
+    res.send('Hello');
   });
 
 //   app.get('/auth/google/callback', function(req, res, next) {
@@ -264,31 +261,25 @@ app.get('/documents/:id', (req, res) => {
   )
 })
 
-app.get('/documents',
-  passport.authenticate('google', {
-    scope: [
-      'https://www.googleapis.com/auth/plus.login',
-      'https://www.googleapis.com/auth/plus.profile.emails.read']
-  }),
-  (req, res) => {
-    console.log('------ Session', req.session);
-    console.log('------ SessionIdName: ', req.session.sessonIdName)
-    console.log('------ Cookies: ', req.cookies)
-    console.log('------ Signed Cookies: ', req.signedCookies)
-    console.log('Auth: ', req.isAuthenticated());
-    console.log('User: ', req.user);
-    dbIniter.query(documents.selectAll,
-      (error, results, field) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        res.json(results);
+app.get('/documents', (req, res) => {
+  console.log('------ Session', req.session);
+  console.log('------ SessionIdName: ', req.session.sessonIdName)
+  console.log('------ Cookies: ', req.cookies)
+  console.log('------ Signed Cookies: ', req.signedCookies)
+  console.log('Auth: ', req.isAuthenticated());
+  console.log('User: ', req.user);
+  dbIniter.query(documents.selectAll,
+    (error, results, field) => {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
       }
-    )
-  })
+      console.log(results);
+      res.json(results);
+    }
+  )
+})
 
 app.post('/upload', upload.single('doc'), (req, res) => {
   let file = req.file;

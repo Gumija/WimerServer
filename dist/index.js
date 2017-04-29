@@ -50,7 +50,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // https://code.google.com/apis/console/
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-console.log('GOOGLE STUFF:', GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
+
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
 //   serialize users into and deserialize users out of the session.  Typically,
@@ -78,8 +78,6 @@ _passport2.default.use(new _passportGoogleOauth2.default.OAuth2Strategy({
   callbackURL: "http://morning-stream-82096.herokuapp.com/auth/google/callback",
   passReqToCallback: true
 }, function (request, accessToken, refreshToken, profile, done) {
-  console.log('verificatoin???', accessToken, refreshToken, profile, done);
-
   // To keep the example simple, the user's Google profile is returned to
   // represent the logged-in user.  In a typical application, you would want
   // to associate the Google account with a user record in your database,
@@ -125,7 +123,7 @@ var buildFolderPath = process.env.DATABASE_URL ? _path2.default.resolve(__dirnam
 app.use((0, _morgan2.default)(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 // Serve static assets
 app.use(_express2.default.static(buildFolderPath));
-app.use((0, _cookieParser2.default)('cookie_secret'));
+// app.use(cookieParser('cookie_secret'));
 app.use(_bodyParser2.default.json());
 app.use((0, _expressSession2.default)({
   secret: 'cookie_secret',
@@ -154,13 +152,12 @@ app.get('/auth/google', _passport2.default.authenticate('google', {
 //   which, in this example, will redirect the user to the home page.
 app.get('/auth/google/callback', _passport2.default.authenticate('google', { failureRedirect: '/login' }), function (req, res) {
   console.log('---------- AFTER LOGIN -----------');
-  console.log('------ Session', req.session);
-  console.log('------ SessionIdName: ', req.session.sessonIdName);
-  console.log('------ Cookies: ', req.cookies);
-  console.log('------ Signed Cookies: ', req.signedCookies);
+  console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('SessionId: ', req.session.id);
+  console.log('SessionCookie: ', req.session.cookie);
   console.log('Auth: ', req.isAuthenticated());
   console.log('User: ', req.user);
-  res.redirect('/');
+  res.send('Hello');
 });
 
 //   app.get('/auth/google/callback', function(req, res, next) {
@@ -251,9 +248,7 @@ app.get('/documents/:id', function (req, res) {
   });
 });
 
-app.get('/documents', _passport2.default.authenticate('google', {
-  scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/plus.profile.emails.read']
-}), function (req, res) {
+app.get('/documents', function (req, res) {
   console.log('------ Session', req.session);
   console.log('------ SessionIdName: ', req.session.sessonIdName);
   console.log('------ Cookies: ', req.cookies);
