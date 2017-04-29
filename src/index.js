@@ -305,7 +305,6 @@ app.get('/documents/:id', (req, res) => {
 })
 
 app.get('/documents',
-  passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
     console.log('-------- DOCUMENTS --------');
     console.log('Session', req.session);
