@@ -134,7 +134,7 @@ _passport2.default.use(new _passportGoogleOauth2.default.OAuth2Strategy({
         return;
       }
       console.log('Get user by googleId ' + profile.id, results);
-      if (results) {
+      if (results.length) {
         return done(null, results[0]);
       } else {
         // Add new user to database
