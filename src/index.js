@@ -107,7 +107,7 @@ app.use(session({
   proxy: true,
   resave: true,
   saveUninitialized: true,
-  cookie: {secure: false}
+  cookie: { secure: false }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -128,24 +128,31 @@ app.get('/auth/google', passport.authenticate('google', {
 //   request.  If authentication fails, the user will be redirected back to the
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
-// app.get('/auth/google/callback', 
-  // passport.authenticate('google', { failureRedirect: '/login' }),
-  // function(req, res) {
-  //   res.redirect('/');
-  // });
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function (req, res) {
+    console.log('---------- AFTER LOGIN -----------')
+    console.log('------ Session', req.session);
+    console.log('------ SessionIdName: ', req.session.sessonIdName)
+    console.log('------ Cookies: ', req.cookies)
+    console.log('------ Signed Cookies: ', req.signedCookies)
+    console.log('Auth: ', req.isAuthenticated());
+    console.log('User: ', req.user);
+    res.redirect('/');
+  });
 
-  app.get('/auth/google/callback', function(req, res, next) {
-  passport.authenticate('google', function(err, user, info) {
-    console.log('User:', user);
-    console.log('Info:', info);
-    if (err) { console.log(err); return next(err); }
-    if (!user) { console.log('No user'); return res.redirect('/'); }
-    req.login(user, function(err) {
-      if (err) { console.log(err); return next(err); }
-      return res.redirect('/');
-    });
-  })(req, res, next);
-});
+//   app.get('/auth/google/callback', function(req, res, next) {
+//   passport.authenticate('google', function(err, user, info) {
+//     console.log('User', user);
+//     console.log('Info:', info);
+//     if (err) { console.log(err); return next(err); }
+//     if (!user) { console.log('No user'); return res.redirect('/'); }
+//     req.login(user, function(err) {
+//       if (err) { console.log(err); return next(err); }
+//       return res.redirect('/');
+//     });
+//   })(req, res, next);
+// });
 
 
 
@@ -259,9 +266,9 @@ app.get('/documents/:id', (req, res) => {
 
 app.get('/documents', (req, res) => {
   console.log('------ Session', req.session);
-  console.log('------ SessionIdName: ', req.session.sessonIdName)  
-  console.log('------ Cookies: ', req.cookies)  
-  console.log('------ Signed Cookies: ', req.signedCookies)  
+  console.log('------ SessionIdName: ', req.session.sessonIdName)
+  console.log('------ Cookies: ', req.cookies)
+  console.log('------ Signed Cookies: ', req.signedCookies)
   console.log('Auth: ', req.isAuthenticated());
   console.log('User: ', req.user);
   dbIniter.query(documents.selectAll,
