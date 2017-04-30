@@ -8,7 +8,7 @@ export default class UserManagerment extends Component {
     fetch('/auth/google/',{
       method: 'POST',
       headers: {
-        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Origin':'https://morning-stream-82096.herokuapp.com',
       }
     })
   }
