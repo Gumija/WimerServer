@@ -339,7 +339,7 @@ app.get('/user', function (req, res) {
   if (req.user) {
     res.json(req.user);
   } else {
-    res.json([]);
+    res.json(undefined);
   }
 });
 

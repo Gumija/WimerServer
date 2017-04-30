@@ -5,9 +5,8 @@ class UserService {
 
   getAndStoreCurrentUser = async (documentId) => {
     let jsonData = await proxy.getUser();
-    for (let user of jsonData) {
-      UserStore.setCurrentUser(user);
-    }
+    console.log('User from server:', jsonData);
+    UserStore.setCurrentUser(jsonData);
   }
 }
 
