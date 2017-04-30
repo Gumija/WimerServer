@@ -342,7 +342,7 @@ app.get('/documents',
         }
       )
     } else {
-      res.json([]);
+      res.json({});
     }
   })
 

@@ -313,7 +313,7 @@ app.get('/documents', function (req, res) {
       res.json(results);
     });
   } else {
-    res.json([]);
+    res.json({});
   }
 });
 
