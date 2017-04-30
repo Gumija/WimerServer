@@ -7,9 +7,9 @@ class UserService {
     let jsonData = await proxy.getUser();
     console.log('User from server:', jsonData);
     if (Object.keys(jsonData).length === 0 && jsonData.constructor === Object) {
-      UserStore.setCurrentUser(jsonData);
+      UserStore.setCurrentUser(undefined);
     } else {
-      UserStore.setCurrentUser(undefined);      
+      UserStore.setCurrentUser(jsonData);
     }
   }
 }
