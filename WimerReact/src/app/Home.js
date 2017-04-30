@@ -3,14 +3,15 @@ import DocumentCard from './DocumentCard';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FontIcon from 'material-ui/FontIcon';
 import Dialog from 'material-ui/Dialog';
+import Paper from 'material-ui/Paper';
 import Dropzone from 'react-dropzone';
 import DocumentService from './services/DocumentService';
-
+import UserManagement from './HeaderModules/UserManagement';
 import './Home.css';
 
 import { inject, observer } from 'mobx-react';
 
-@inject("documentStore")
+@inject("documentStore", 'userStore')
 @observer
 export default class Home extends Component {
 
@@ -18,6 +19,7 @@ export default class Home extends Component {
     super(props);
     this.state = {
       open: false,
+      showLoginPrompt: false,
     }
   }
 
@@ -71,6 +73,14 @@ export default class Home extends Component {
     }
   }
 
+  onUploadClick = () => {
+    if (this.props.userStore.currentUser) {
+      this.setState({ open: true })
+    } else {
+      this.setState({ showLoginPrompt: !this.state.showLoginPrompt })
+    }
+  }
+
   render() {
     return (
       /* Used to center stuff. This will be Navigated */
@@ -81,13 +91,32 @@ export default class Home extends Component {
             <DocumentCard document={doc} key={doc.id} />
           )}
         </div>
-        {/*<p className="section-header">Uploads</p>
-        <div className="card-container">
-          {this.props.documentStore.uploadedDocs.map((doc) =>
-            <DocumentCard document={doc} key={doc.id} />
-          )}
-        </div>*/}
-        <FloatingActionButton className="absolute-fab" onTouchTap={() => this.setState({ open: true })}>
+        {this.state.showLoginPrompt &&
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+            onClick={() => this.onUploadClick()}>
+            <Paper zDepth={2}
+              style={{
+                position: 'fixed',
+                bottom: 65,
+                right: 60,
+                padding: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+              <span style={{ marginBottom: 15 }}>Log in to upload a file</span>
+              <UserManagement />
+            </Paper>
+          </div>
+        }
+        <FloatingActionButton className="absolute-fab" onTouchTap={this.onUploadClick}>
           <FontIcon className="material-icons">file_upload</FontIcon>
         </FloatingActionButton>
         <Dialog

@@ -27,7 +27,7 @@ export default class DocumentCard extends Component {
           <FlatButton
             icon={<FontIcon className="material-icons">delete</FontIcon>}
           />
-          <Link to={`/document/${this.props.document.id}`}>
+          <Link to={`/document/${this.props.document.id}/${this.props.document.user_id}`}>
             <RaisedButton>
               OPEN
             </RaisedButton>

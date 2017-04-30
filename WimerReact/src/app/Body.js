@@ -19,7 +19,7 @@ export default class Body extends Component {
       /* Used to center stuff. This will be Navigated */
         <div className="body">
           <Route exact path="/" component={Home} />
-          <Route path="/document/:id" component={DocumentViewContainer} />
+          <Route path="/document/:documentId/:userId" component={DocumentViewContainer} />
         </div >
     );
   }

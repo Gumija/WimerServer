@@ -15,8 +15,8 @@ class DocumentService {
     }
   }
 
-  getDocument = async (id) => {
-    let documentJson = await proxy.getDocument(id);
+  getDocument = async (documentId, userId) => {
+    let documentJson = await proxy.getDocument(documentId, userId);
     for (let docinfo of documentJson) {
       DocumentStore.addDocumentInfo({
         id: parseInt(docinfo.id, 10),

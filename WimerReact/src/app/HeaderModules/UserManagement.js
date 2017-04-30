@@ -17,7 +17,7 @@ export default class UserManagerment extends Component {
     return (
       <div>
         <a href='/auth/google'>
-          <RaisedButton onTouchTap={this.LoginPressed} label="Login" style={{ marginLeft: 12 }} />
+          <RaisedButton onTouchTap={this.LoginPressed} label="Login" />
         </a>
       </div>
     );
