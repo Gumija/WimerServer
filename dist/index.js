@@ -202,20 +202,6 @@ app.get('/auth/google/callback', _passport2.default.authenticate('google', {
   failureRedirect: 'back'
 }));
 
-//   app.get('/auth/google/callback', function(req, res, next) {
-//   passport.authenticate('google', function(err, user, info) {
-//     console.log('User', user);
-//     console.log('Info:', info);
-//     if (err) { console.log(err); return next(err); }
-//     if (!user) { console.log('No user'); return res.redirect('/'); }
-//     req.login(user, function(err) {
-//       if (err) { console.log(err); return next(err); }
-//       return res.redirect('/');
-//     });
-//   })(req, res, next);
-// });
-
-
 app.get('/highlight/:documentId/:userId', function (req, res) {
   dbIniter.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
     if (error) {
@@ -338,6 +324,10 @@ app.post('/upload', upload.single('doc'), function (req, res) {
     console.log(results);
     res.json({ id: results.insertId });
   });
+});
+
+app.get('/user', function (req, res) {
+  res.json(req.user);
 });
 
 // Always return the main index.html, so react-router render the route in the client

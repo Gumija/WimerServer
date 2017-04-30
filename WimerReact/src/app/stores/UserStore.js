@@ -1,15 +1,13 @@
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
 
-class DocumentStore {
+class UserStore {
 
-  @observable currentUser = {
-    id: 0,
-    name: 'Gulyas Milan',
-    email: 'gumija@gmail.com',
-    googleId: '1234567890',
+  @observable currentUser = undefined;
+
+  @action setCurrentUser(user){
+    this.currentUser = user;
   }
-
 }
 
-var documentStore = new DocumentStore();
-export default documentStore;
+var userStore = new UserStore();
+export default userStore;
