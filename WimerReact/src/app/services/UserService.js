@@ -6,7 +6,11 @@ class UserService {
   getAndStoreCurrentUser = async (documentId) => {
     let jsonData = await proxy.getUser();
     console.log('User from server:', jsonData);
-    UserStore.setCurrentUser(jsonData);
+    if (!Array.isArray(jsonData)) {
+      UserStore.setCurrentUser(jsonData);
+    } else {
+      UserStore.setCurrentUser(undefined);      
+    }
   }
 }
 
