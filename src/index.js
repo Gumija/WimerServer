@@ -375,7 +375,11 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 })
 
 app.get('/user', (req, res) => {
-  res.json(req.user);
+  if (req.user) {
+    res.json(req.user);
+  } else {
+    res.json([]);
+  }
 })
 
 // Always return the main index.html, so react-router render the route in the client
