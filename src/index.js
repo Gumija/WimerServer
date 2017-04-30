@@ -169,7 +169,7 @@ app.use(passport.session());
 //   request.  The first step in Google authentication will involve
 //   redirecting the user to google.com.  After authorization, Google
 //   will redirect the user back to this application at /auth/google/callback
-app.get('/auth/google', passport.authenticate('google', {
+app.post('/auth/google', passport.authenticate('google', {
   scope: [
     'https://www.googleapis.com/auth/plus.login',
     'https://www.googleapis.com/auth/plus.profile.emails.read']
@@ -181,10 +181,10 @@ app.get('/auth/google', passport.authenticate('google', {
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
 app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  function (req, res) {
-    res.redirect('/');
-  });
+  passport.authenticate('google', {
+    successRedirect: 'back',
+    failureRedirect: 'back',
+  }));
 
 //   app.get('/auth/google/callback', function(req, res, next) {
 //   passport.authenticate('google', function(err, user, info) {
@@ -293,17 +293,17 @@ app.get('/documents/download/:id', (req, res) => {
 app.post('/documents/update/:id', (req, res) => {
   // TODO: add document owner to document
   // if (req.body.userId == req.user.id) {
-    dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id]),
-      (error, results, fields) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        res.json(results);
+  dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id]),
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
       }
-    )
+      console.log(results);
+      res.json(results);
+    }
+  )
   // } else {
   //   res.sendStatus(403); // 403 Forbidden
   // }

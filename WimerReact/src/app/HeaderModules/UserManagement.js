@@ -4,12 +4,18 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 export default class UserManagerment extends Component {
 
+  LoginPressed = () => {
+    fetch('/auth/google/',{
+      method: 'POST',
+    })
+  }
+
   render() {
     return (
       <div>
-        <a href='/auth/google'>
+        {/*<a href='/auth/google'>*/}
           <RaisedButton onTouchTap={this.LoginPressed} label="Login" style={{ marginLeft: 12 }} />
-        </a>
+        {/*</a>*/}
       </div>
     );
   }
