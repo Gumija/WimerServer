@@ -319,17 +319,17 @@ app.get('/documents/:documentId/:userId', (req, res) => {
 
 app.get('/documents',
   (req, res) => {
+    console.log('-------- DOCUMENTS --------');
+    console.log('Session', req.session);
+    console.log('SessionIdName: ', req.session.sessonIdName)
+    console.log('SessionId: ', req.session.id)
+    console.log('SessionId: ', req.sessionID)
+    console.log('SessionCookie: ', req.session.cookie)
+    console.log('Cookies: ', req.cookies)
+    console.log('Signed Cookies: ', req.signedCookies)
+    console.log('Auth: ', req.isAuthenticated());
+    console.log('User: ', req.user);
     if (req.user) {
-      console.log('-------- DOCUMENTS --------');
-      console.log('Session', req.session);
-      console.log('SessionIdName: ', req.session.sessonIdName)
-      console.log('SessionId: ', req.session.id)
-      console.log('SessionId: ', req.sessionID)
-      console.log('SessionCookie: ', req.session.cookie)
-      console.log('Cookies: ', req.cookies)
-      console.log('Signed Cookies: ', req.signedCookies)
-      console.log('Auth: ', req.isAuthenticated());
-      console.log('User: ', req.user);
       dbIniter.query(mysql.format(documents.selectAllByUser, [req.user.id]),
         (error, results, field) => {
           if (error) {
@@ -370,7 +370,7 @@ app.post('/upload', upload.single('doc'), (req, res) => {
       }
     )
   } else {
-    res.sendState(403); // 403 Forbidden
+    res.sendStatus(403); // 403 Forbidden
   }
 })
 

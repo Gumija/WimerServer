@@ -292,17 +292,17 @@ app.get('/documents/:documentId/:userId', function (req, res) {
 });
 
 app.get('/documents', function (req, res) {
+  console.log('-------- DOCUMENTS --------');
+  console.log('Session', req.session);
+  console.log('SessionIdName: ', req.session.sessonIdName);
+  console.log('SessionId: ', req.session.id);
+  console.log('SessionId: ', req.sessionID);
+  console.log('SessionCookie: ', req.session.cookie);
+  console.log('Cookies: ', req.cookies);
+  console.log('Signed Cookies: ', req.signedCookies);
+  console.log('Auth: ', req.isAuthenticated());
+  console.log('User: ', req.user);
   if (req.user) {
-    console.log('-------- DOCUMENTS --------');
-    console.log('Session', req.session);
-    console.log('SessionIdName: ', req.session.sessonIdName);
-    console.log('SessionId: ', req.session.id);
-    console.log('SessionId: ', req.sessionID);
-    console.log('SessionCookie: ', req.session.cookie);
-    console.log('Cookies: ', req.cookies);
-    console.log('Signed Cookies: ', req.signedCookies);
-    console.log('Auth: ', req.isAuthenticated());
-    console.log('User: ', req.user);
     dbIniter.query(_mysql2.default.format(documents.selectAllByUser, [req.user.id]), function (error, results, field) {
       if (error) {
         console.log(error);
@@ -331,7 +331,7 @@ app.post('/upload', upload.single('doc'), function (req, res) {
       res.json({ id: results.insertId });
     });
   } else {
-    res.sendState(403); // 403 Forbidden
+    res.sendStatus(403); // 403 Forbidden
   }
 });
 
