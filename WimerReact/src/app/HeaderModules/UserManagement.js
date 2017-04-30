@@ -7,6 +7,9 @@ export default class UserManagerment extends Component {
   LoginPressed = () => {
     fetch('/auth/google/',{
       method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin':'*',
+      }
     })
   }
 
