@@ -53,15 +53,17 @@ var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID,
 
 var documents = {
   insert: 'INSERT INTO documents \
-     VALUES (?, ?, ?, ?, ?)',
-  selectAll: 'SELECT * \
-     FROM documents',
+     VALUES (?, ?, ?, ?, ?, ?)',
+  selectAllByUser: 'SELECT * \
+   FROM documents \
+   WHERE user_id = ?',
   selectById: 'SELECT * \
      FROM documents \
      WHERE id = ?',
   update: 'UPDATE documents \
      SET title = ? \
-     WHERE id = ?'
+     WHERE id = ? \
+     AND user_id = ?'
 };
 
 var highlights = {
@@ -262,24 +264,23 @@ app.get('/documents/download/:id', function (req, res) {
 });
 
 app.post('/documents/update/:id', function (req, res) {
-  // TODO: add document owner to document
-  // if (req.body.userId == req.user.id) {
-  dbIniter.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id]), function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      res.sendStatus(500);
-      return;
-    }
-    console.log(results);
-    res.json(results);
-  });
-  // } else {
-  //   res.sendStatus(403); // 403 Forbidden
-  // }
+  if (req.user) {
+    dbIniter.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id, req.user.id]), function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
+      }
+      console.log(results);
+      res.json(results);
+    });
+  } else {
+    res.json([]);
+  }
 });
 
-app.get('/documents/:id', function (req, res) {
-  dbIniter.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.id, 10)]), function (error, results, fields) {
+app.get('/documents/:documentId/:userId', function (req, res) {
+  dbIniter.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.documentId, 10), parseInt(req.params.userId, 10)]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
@@ -291,39 +292,47 @@ app.get('/documents/:id', function (req, res) {
 });
 
 app.get('/documents', function (req, res) {
-  console.log('-------- DOCUMENTS --------');
-  console.log('Session', req.session);
-  console.log('SessionIdName: ', req.session.sessonIdName);
-  console.log('SessionId: ', req.session.id);
-  console.log('SessionId: ', req.sessionID);
-  console.log('SessionCookie: ', req.session.cookie);
-  console.log('Cookies: ', req.cookies);
-  console.log('Signed Cookies: ', req.signedCookies);
-  console.log('Auth: ', req.isAuthenticated());
-  console.log('User: ', req.user);
-  dbIniter.query(documents.selectAll, function (error, results, field) {
-    if (error) {
-      console.log(error);
-      res.sendStatus(500);
-      return;
-    }
-    console.log(results);
-    res.json(results);
-  });
+  if (req.user) {
+    console.log('-------- DOCUMENTS --------');
+    console.log('Session', req.session);
+    console.log('SessionIdName: ', req.session.sessonIdName);
+    console.log('SessionId: ', req.session.id);
+    console.log('SessionId: ', req.sessionID);
+    console.log('SessionCookie: ', req.session.cookie);
+    console.log('Cookies: ', req.cookies);
+    console.log('Signed Cookies: ', req.signedCookies);
+    console.log('Auth: ', req.isAuthenticated());
+    console.log('User: ', req.user);
+    dbIniter.query(_mysql2.default.format(documents.selectAllByUser, [req.user.id]), function (error, results, field) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
+      }
+      console.log(results);
+      res.json(results);
+    });
+  } else {
+    res.json([]);
+  }
 });
 
 app.post('/upload', upload.single('doc'), function (req, res) {
-  var file = req.file;
-  // save document info to db
-  dbIniter.query(_mysql2.default.format(documents.insert, [0, file.originalname, file.path, file.mimetype, file.encoding]), function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      res.sendStatus(500);
-      return;
-    }
-    console.log(results);
-    res.json({ id: results.insertId });
-  });
+  if (req.user) {
+    var file = req.file;
+    // save document info to db
+    dbIniter.query(_mysql2.default.format(documents.insert, [0, file.originalname, file.path, file.mimetype, file.encoding, req.user.id]), function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
+      }
+      console.log(results);
+      res.json({ id: results.insertId });
+    });
+  } else {
+    res.sendState(403); // 403 Forbidden
+  }
 });
 
 app.get('/user', function (req, res) {
