@@ -49,7 +49,8 @@ export default class DbInitializer {
       `path` varchar(512) NOT NULL,\
       `type` varchar(45) NOT NULL,\
       `encoding` varchar(45) NOT NULL,\
-      PRIMARY KEY (`id`)\
+      `user_id` int(11) NOT NULL,\
+      PRIMARY KEY (`id`, `user_id`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1",
       () => this.queryWithConnection("\
       CREATE TABLE IF NOT EXISTS `highlights` (\

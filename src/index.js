@@ -18,10 +18,11 @@ var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 let documents = {
   insert:
   'INSERT INTO documents \
-     VALUES (?, ?, ?, ?, ?)',
-  selectAll:
+     VALUES (?, ?, ?, ?, ?, ?)',
+  selectAllByUser:
   'SELECT * \
-     FROM documents',
+   FROM documents \
+   WHERE user_id = ?',
   selectById:
   'SELECT * \
      FROM documents \
@@ -29,7 +30,8 @@ let documents = {
   update:
   'UPDATE documents \
      SET title = ? \
-     WHERE id = ?',
+     WHERE id = ? \
+     AND user_id = ?',
 }
 
 let highlights = {
@@ -280,26 +282,29 @@ app.get('/documents/download/:id', (req, res) => {
 })
 
 app.post('/documents/update/:id', (req, res) => {
-  // TODO: add document owner to document
-  // if (req.body.userId == req.user.id) {
-  dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id]),
-    (error, results, fields) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
+  if (req.user) {
+    dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id, req.user.id]),
+      (error, results, fields) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(results);
+        res.json(results);
       }
-      console.log(results);
-      res.json(results);
-    }
-  )
-  // } else {
-  //   res.sendStatus(403); // 403 Forbidden
-  // }
+    )
+  } else {
+    res.json([]);
+  }
 })
 
-app.get('/documents/:id', (req, res) => {
-  dbIniter.query(mysql.format(documents.selectById, [parseInt(req.params.id, 10)]),
+app.get('/documents/:documentId/:userId', (req, res) => {
+  dbIniter.query(mysql.format(documents.selectById,
+    [
+      parseInt(req.params.documentId, 10),
+      parseInt(req.params.userId, 10)
+    ]),
     (error, results, fields) => {
       if (error) {
         console.log(error);
@@ -314,50 +319,59 @@ app.get('/documents/:id', (req, res) => {
 
 app.get('/documents',
   (req, res) => {
-    console.log('-------- DOCUMENTS --------');
-    console.log('Session', req.session);
-    console.log('SessionIdName: ', req.session.sessonIdName)
-    console.log('SessionId: ', req.session.id)
-    console.log('SessionId: ', req.sessionID)
-    console.log('SessionCookie: ', req.session.cookie)
-    console.log('Cookies: ', req.cookies)
-    console.log('Signed Cookies: ', req.signedCookies)
-    console.log('Auth: ', req.isAuthenticated());
-    console.log('User: ', req.user);
-    dbIniter.query(documents.selectAll,
-      (error, results, field) => {
+    if (req.user) {
+      console.log('-------- DOCUMENTS --------');
+      console.log('Session', req.session);
+      console.log('SessionIdName: ', req.session.sessonIdName)
+      console.log('SessionId: ', req.session.id)
+      console.log('SessionId: ', req.sessionID)
+      console.log('SessionCookie: ', req.session.cookie)
+      console.log('Cookies: ', req.cookies)
+      console.log('Signed Cookies: ', req.signedCookies)
+      console.log('Auth: ', req.isAuthenticated());
+      console.log('User: ', req.user);
+      dbIniter.query(mysql.format(documents.selectAllByUser, [req.user.id]),
+        (error, results, field) => {
+          if (error) {
+            console.log(error);
+            res.sendStatus(500);
+            return;
+          }
+          console.log(results);
+          res.json(results);
+        }
+      )
+    } else {
+      res.json([]);
+    }
+  })
+
+app.post('/upload', upload.single('doc'), (req, res) => {
+  if (req.user) {
+    let file = req.file;
+    // save document info to db
+    dbIniter.query(mysql.format(documents.insert,
+      [
+        0,
+        file.originalname,
+        file.path,
+        file.mimetype,
+        file.encoding,
+        req.user.id,
+      ]),
+      (error, results, fields) => {
         if (error) {
           console.log(error);
           res.sendStatus(500);
           return;
         }
         console.log(results);
-        res.json(results);
+        res.json({ id: results.insertId });
       }
     )
-  })
-
-app.post('/upload', upload.single('doc'), (req, res) => {
-  let file = req.file;
-  // save document info to db
-  dbIniter.query(mysql.format(documents.insert,
-    [
-      0,
-      file.originalname,
-      file.path,
-      file.mimetype,
-      file.encoding,
-    ]),
-    (error, results, fields) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
-      }
-      console.log(results);
-      res.json({ id: results.insertId });
-    }
-  )
+  } else {
+    res.sendState(403); // 403 Forbidden
+  }
 })
 
 app.get('/user', (req, res) => {
