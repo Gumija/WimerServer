@@ -310,12 +310,14 @@ app.get('/documents/:documentId/:userId', function (req, res) {
 
 app.post('/documents/:documentId', function (req, res) {
   if (req.user) {
+    console.log('QUERY', _mysql2.default.format(documents.selectById, [req.params.documentId, req.user.id]));
     dbIniter.query(_mysql2.default.format(documents.selectById, [req.params.documentId, req.user.id]), function (error, results, fields) {
       if (error) {
         console.log(error);
         res.sendStatus(500);
         return;
       }
+      console.log(results);
       if (results.length) {
         dbIniter.query(_mysql2.default.format(documents.insert, [0, results[0].title, results[0].path, results[0].mimetype, results[0].encoding, req.user.id]), function (error, results, fields) {
           if (error) {

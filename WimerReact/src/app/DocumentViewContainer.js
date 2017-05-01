@@ -38,7 +38,7 @@ export default class DocumentViewContainer extends Component {
       doc.userId === parseInt(this.props.match.params.userId, 10));
     DocumentService.addOwnDocument(document.id);
     let userId = this.props.userStore.currentUser.id;
-    this.context.history.push(`/document/${document.id}/${userId}`)
+    this.props.history.push(`/document/${document.id}/${userId}`)
   }
 
   render() {

@@ -338,6 +338,7 @@ app.get('/documents/:documentId/:userId', (req, res) => {
 
 app.post('/documents/:documentId', (req, res) => {
   if (req.user) {
+    console.log('QUERY', mysql.format(documents.selectById, [req.params.documentId, req.user.id]));
     dbIniter.query(mysql.format(documents.selectById, [req.params.documentId, req.user.id]),
       (error, results, fields) => {
         if (error) {
@@ -345,6 +346,7 @@ app.post('/documents/:documentId', (req, res) => {
           res.sendStatus(500);
           return;
         }
+        console.log(results);
         if (results.length) {
           dbIniter.query(mysql.format(documents.insert,
             [

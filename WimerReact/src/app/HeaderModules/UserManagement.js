@@ -20,7 +20,7 @@ export default class UserManagerment extends Component {
     fetch('/logout');
     this.props.userStore.resetStore();
     this.props.documentStore.resetStore();
-    this.setState({ redirect: true })
+    this.props.history.push('/');
   }
 
   render() {
