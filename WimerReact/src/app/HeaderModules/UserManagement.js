@@ -1,24 +1,49 @@
 
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
+import { Redirect } from 'react-router'
 
+import { inject, observer } from 'mobx-react';
+
+@inject('userStore')
+@observer
 export default class UserManagerment extends Component {
 
-  LoginPressed = () => {
-    // fetch('/auth/google/',{
-    //   method: 'POST',
-    //   headers: {
-    //     'Access-Control-Allow-Origin':'https://morning-stream-82096.herokuapp.com',
-    //   }
-    // })
+  constructor(props) {
+    super(props);
+    this.state = {
+      redirect: false,
+    }
+  }
+
+  onLogout = () => {
+    fetch('/logout');
+    this.props.userStore.setCurrentUser(undefined);
+    this.setState({ redirect: true })
   }
 
   render() {
+    let button;
+    if (this.props.userStore.currentUser) {
+      button = (
+        <RaisedButton onTouchTap={this.onLogout} label="Logout" />
+      )
+    } else {
+      button = (
+        <a href='/auth/google'>
+          <RaisedButton label="Login" />
+        </a>
+      )
+    }
     return (
       <div>
-        <a href='/auth/google'>
-          <RaisedButton onTouchTap={this.LoginPressed} label="Login" />
-        </a>
+        {this.state.redirect ?
+          <Redirect to='/' />
+          :
+          <a href='/auth/google'>
+            {button}
+          </a>
+        }
       </div>
     );
   }
