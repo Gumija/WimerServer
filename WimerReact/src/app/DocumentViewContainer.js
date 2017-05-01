@@ -12,10 +12,24 @@ import { withRouter } from 'react-router-dom';
 export default class DocumentViewContainer extends Component {
 
   async componentWillMount() {
+    this.init(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
     let documentId = parseInt(this.props.match.params.documentId, 10);
     let userId = parseInt(this.props.match.params.userId, 10);
+    let nextdocumentId = parseInt(nextProps.match.params.documentId, 10);
+    let nextUserId = parseInt(nextProps.match.params.userId, 10);
+    if (documentId !== nextdocumentId || userId !== nextUserId) {
+      this.init(nextProps);
+    }
+  }
+
+  init = async (props) => {
+    let documentId = parseInt(props.match.params.documentId, 10);
+    let userId = parseInt(props.match.params.userId, 10);
     await DocumentService.getDocument(documentId, userId);
-    let document = this.props.documentStore.docInfos.find((doc) => doc.id === documentId);
+    let document = props.documentStore.docInfos.find((doc) => doc.id === documentId);
     this.props.documentStore.setCurrentFile({ id: document.id, file: await DocumentService.getFile(document) })
     this.props.documentStore.setHighlights({ id: documentId, str: await HighlightService.getHighlights(documentId, userId) });
   }
