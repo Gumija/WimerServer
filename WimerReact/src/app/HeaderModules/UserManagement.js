@@ -5,7 +5,7 @@ import { Redirect } from 'react-router'
 
 import { inject, observer } from 'mobx-react';
 
-@inject('userStore')
+@inject('userStore', 'documentStore')
 @observer
 export default class UserManagerment extends Component {
 

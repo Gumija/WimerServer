@@ -183,9 +183,10 @@ export default class DocumentView extends Component {
             {!this.props.user &&
               <div style={{
                 position: 'fixed', bottom: 0, right: 0, margin: 8, display: 'flex',
-                alignItems: 'center', justifyContent: 'center', maxWidth: 180,
+                alignItems: 'center', justifyContent: 'center', width: 245,
                 wordWrap: 'normal', backgroundColor: 'rgba(200,200,200,.6)',
-                padding: 16, textAlign: 'center', borderRadius: 2,
+                padding: 16, textAlign: 'center',
+                borderWidth: 2, borderRadius: 2, borderStyle: 'solid', borderColor: 'white'
               }}>
                 Log in to add highlights
               </div>
@@ -193,9 +194,10 @@ export default class DocumentView extends Component {
             {this.props.user && this.props.user.id !== this.props.document.userId &&
               <div style={{
                 position: 'fixed', bottom: 0, right: 0, margin: 8, display: 'flex',
-                alignItems: 'center', justifyContent: 'center', maxWidth: 180,
+                alignItems: 'center', justifyContent: 'center', width: 245,
                 wordWrap: 'normal', backgroundColor: 'rgba(200,200,200,.6)',
-                padding: 16, textAlign: 'center', borderRadius: 2,
+                padding: 16, textAlign: 'center',
+                borderWidth: 2, borderRadius: 2, borderStyle: 'solid', borderColor: 'white'
               }}>
                 You can only add highlights to your own version of the document.
               </div>
