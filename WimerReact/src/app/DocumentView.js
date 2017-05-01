@@ -3,6 +3,7 @@ import './DocumentView.css';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FontIcon from 'material-ui/FontIcon';
 import SvgIcon from 'material-ui/SvgIcon';
+import RaisedButton from 'material-ui/RaisedButton';
 import rangy from 'rangy/lib/rangy-core.js';
 import Digital from 'react-activity/lib/Digital';
 import ReactMarkdown from 'react-markdown';
@@ -184,7 +185,7 @@ export default class DocumentView extends Component {
               <div style={{
                 position: 'fixed', bottom: 0, right: 0, margin: 8, display: 'flex',
                 alignItems: 'center', justifyContent: 'center', width: 245,
-                wordWrap: 'normal', backgroundColor: 'rgba(200,200,200,.6)',
+                wordWrap: 'normal', backgroundColor: 'rgba(220,220,220,1)',
                 padding: 16, textAlign: 'center',
                 borderWidth: 2, borderRadius: 2, borderStyle: 'solid', borderColor: 'white'
               }}>
@@ -192,15 +193,9 @@ export default class DocumentView extends Component {
               </div>
             }
             {this.props.user && this.props.user.id !== this.props.document.userId &&
-              <div style={{
-                position: 'fixed', bottom: 0, right: 0, margin: 8, display: 'flex',
-                alignItems: 'center', justifyContent: 'center', width: 245,
-                wordWrap: 'normal', backgroundColor: 'rgba(200,200,200,.6)',
-                padding: 16, textAlign: 'center',
-                borderWidth: 2, borderRadius: 2, borderStyle: 'solid', borderColor: 'white'
-              }}>
-                You can only add highlights to your own version of the document.
-              </div>
+              <RaisedButton label="START YOUR OWN HIGHLIGHTING" primary={true} style={{
+                position: 'fixed', bottom: 0, right: 0, margin: 8,
+              }} />
             }
             {this.props.user && this.props.user.id === this.props.document.userId &&
               <div style={{ position: 'fixed', bottom: 0, right: 0, display: 'flex', flexDirection: 'row-reverse' }}>
