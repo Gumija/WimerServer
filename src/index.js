@@ -353,7 +353,7 @@ app.post('/documents/:documentId', (req, res) => {
               0,
               results[0].title,
               results[0].path,
-              results[0].mimetype,
+              results[0].type,
               results[0].encoding,
               req.user.id,
             ]),
