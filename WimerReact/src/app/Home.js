@@ -59,6 +59,7 @@ export default class Home extends Component {
           preview: "",
           last_opened: new Date(),
           fileType: acceptedFiles[0].type,
+          userId: this.props.userStore.currentUser.id
         }
         this.props.documentStore.addDocumentInfo(doc);
         // TODO: navigate to document

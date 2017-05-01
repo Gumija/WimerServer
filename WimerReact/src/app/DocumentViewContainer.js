@@ -34,13 +34,10 @@ export default class DocumentViewContainer extends Component {
 
   render() {
     // eslint-disable-next-line
-    let document = this.props.documentStore.docInfos.find((doc) => doc.id === parseInt(this.props.match.params.id, 10));
+    let document = this.props.documentStore.docInfos.find((doc) => doc.id === parseInt(this.props.match.params.documentId, 10));
     let loading = document &&
       document.id === this.props.documentStore.currentFile.id &&
       document.id === this.props.documentStore.highlightsString.id;
-    console.log('Doc', document)
-    console.log('Current File', this.props.documentStore.currentFile)
-    console.log('hlstring', this.props.documentStore.highlightsString)
     return (
       <DocumentView
         document={document}
