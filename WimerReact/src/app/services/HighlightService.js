@@ -25,12 +25,16 @@ class HighlightService {
 
   getHighlights = async (documentId) => {
     let jsonData = await proxy.getHighlights(documentId, UserStore.currentUser.id);
-    let str = 'type:textContent';
-    // type:textContent|0$4$1$rgba(256,0,0,0.6)$presenter
-    for (let hl of jsonData) {
-      str += '|' + hl.start + '$' + hl.end + '$' + hl.id + '$' + hl.class + '$' + hl.container;
+    if (Object.keys(jsonData).length === 0 && jsonData.constructor === Object) {
+      // empty response
+    } else {
+      let str = 'type:textContent';
+      // type:textContent|0$4$1$rgba(256,0,0,0.6)$presenter
+      for (let hl of jsonData) {
+        str += '|' + hl.start + '$' + hl.end + '$' + hl.id + '$' + hl.class + '$' + hl.container;
+      }
+      return str;
     }
-    return str;
   }
 }
 

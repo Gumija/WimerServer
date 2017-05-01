@@ -4,27 +4,35 @@ import proxy from '../proxy/DocumentProxy';
 class DocumentService {
   getDocuments = async () => {
     let documentJson = await proxy.getDocuments();
-    for (let docinfo of documentJson) {
-      DocumentStore.addDocumentInfo({
-        id: parseInt(docinfo.id, 10),
-        title: docinfo.title,
-        preview: "",
-        last_opened: new Date(),
-        fileType: docinfo.type,
-      })
+    if (Object.keys(documentJson).length === 0 && documentJson.constructor === Object) {
+      // empty response
+    } else {
+      for (let docinfo of documentJson) {
+        DocumentStore.addDocumentInfo({
+          id: parseInt(docinfo.id, 10),
+          title: docinfo.title,
+          preview: "",
+          last_opened: new Date(),
+          fileType: docinfo.type,
+        })
+      }
     }
   }
 
   getDocument = async (documentId, userId) => {
     let documentJson = await proxy.getDocument(documentId, userId);
-    for (let docinfo of documentJson) {
-      DocumentStore.addDocumentInfo({
-        id: parseInt(docinfo.id, 10),
-        title: docinfo.title,
-        preview: "",
-        last_opened: new Date(),
-        fileType: docinfo.type,
-      })
+    if (Object.keys(documentJson).length === 0 && documentJson.constructor === Object) {
+      // empty response
+    } else {
+      for (let docinfo of documentJson) {
+        DocumentStore.addDocumentInfo({
+          id: parseInt(docinfo.id, 10),
+          title: docinfo.title,
+          preview: "",
+          last_opened: new Date(),
+          fileType: docinfo.type,
+        })
+      }
     }
   }
 
