@@ -87,7 +87,10 @@ var users = {
    FROM users \
    WHERE id = ?',
   insert: 'INSERT INTO users \
-    VALUES (0, ?, ?, ?)'
+    VALUES (0, ?, ?, ?)',
+  update: 'UPDATE user \
+   SET name = ?, email = ?, google_id = ? \
+   WHERE id = ?'
 };
 
 var dbIniter = new _db2.default();
@@ -127,6 +130,8 @@ _passport2.default.use(new _passportGoogleOauth2.default.OAuth2Strategy({
   callbackURL: "http://morning-stream-82096.herokuapp.com/auth/google/callback",
   passReqToCallback: true
 }, function (request, accessToken, refreshToken, profile, done) {
+  console.log('Access Token: ', accessToken);
+  console.log('Refresh Token: ', refreshToken);
   process.nextTick(function () {
     // Check if user exists with google id
     dbIniter.query(_mysql2.default.format(users.selectByGoogleId, [profile.id]), function (error, results, fields) {
@@ -191,7 +196,8 @@ app.get('/auth/google', function (req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 }, _passport2.default.authenticate('google', {
-  scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/plus.profile.emails.read']
+  scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/plus.profile.emails.read'],
+  approvalPrompt: 'force'
 }));
 
 // GET /auth/google/callback
