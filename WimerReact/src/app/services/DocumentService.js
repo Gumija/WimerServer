@@ -14,6 +14,7 @@ class DocumentService {
           preview: "",
           last_opened: new Date(),
           fileType: docinfo.type,
+          userId: docinfo.user_id,
         })
       }
     }
@@ -31,6 +32,7 @@ class DocumentService {
           preview: "",
           last_opened: new Date(),
           fileType: docinfo.type,
+          userId: docinfo.user_id,          
         })
       }
     }
