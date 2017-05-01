@@ -25,7 +25,7 @@ export default class Header extends Component {
     return (
       <div>
         <Route exact path="/" component={HeaderHome} />
-        <Route exact path="/document/:id" component={HeaderDocument} />
+        <Route exact path="/document/:documentId/:userId" component={HeaderDocument} />
       </div>
     );
   }

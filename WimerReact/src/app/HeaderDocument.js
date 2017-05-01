@@ -30,10 +30,12 @@ export default class Header extends Component {
 
   editTitle = () => {
     console.log('editted', this.state.editting);
+    let documentId = parseInt(this.props.match.params.documentId, 10);
+    let userId = parseInt(this.props.match.params.userId, 10);
     if (this.state.editting) {
       if (this.state.title) {
         this.setState({ editting: !this.state.editting });
-        let document = this.props.documentStore.docInfos.find((d) => d.id === parseInt(this.props.match.params.id, 10));
+        let document = this.props.documentStore.docInfos.find((d) => d.id === documentId && d.userId === userId);
         document.title = this.state.title;
         // TODO: send to server title
         DocumentService.updateTitle(document);
@@ -41,7 +43,7 @@ export default class Header extends Component {
     } else {
       this.setState({
         editting: !this.state.editting,
-        title: this.props.documentStore.docInfos.find((d) => d.id === parseInt(this.props.match.params.id, 10)).title
+        title: this.props.documentStore.docInfos.find((d) => d.id === documentId && d.userId === userId).title
       });
     }
   }
@@ -51,7 +53,7 @@ export default class Header extends Component {
       <AppBar
         title={this.props.match ?
           <div >
-            {this.props.documentStore.docInfos.find((d) => d.id === parseInt(this.props.match.params.id, 10)) ?
+            {this.props.documentStore.docInfos.find((d) => d.id === parseInt(this.props.match.params.documentId, 10) && d.userId === parseInt(this.props.match.params.userId, 10)) ?
               <div>
                 {this.state.editting ?
                   <TextField
@@ -62,7 +64,7 @@ export default class Header extends Component {
                   />
                   :
                   <p style={{ margin: 0, display: 'inline-block' }}>
-                    {this.props.documentStore.docInfos.find((d) => d.id === parseInt(this.props.match.params.id, 10)).title}
+                    {this.props.documentStore.docInfos.find((d) => d.id === parseInt(this.props.match.params.documentId, 10) && d.userId === parseInt(this.props.match.params.userId, 10)).title}
                   </p>
                 }
                 {(!this.state.editting || this.state.title) &&
