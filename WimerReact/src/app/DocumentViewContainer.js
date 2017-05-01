@@ -7,7 +7,7 @@ import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 
 @withRouter
-@inject('documentStore')
+@inject('documentStore', 'userStore')
 @observer
 export default class DocumentViewContainer extends Component {
 
