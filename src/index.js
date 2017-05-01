@@ -185,7 +185,8 @@ app.get('/auth/google', (req, res, next) => {
   passport.authenticate('google', {
     scope: [
       'https://www.googleapis.com/auth/plus.login',
-      'https://www.googleapis.com/auth/plus.profile.emails.read']
+      'https://www.googleapis.com/auth/plus.profile.emails.read'],
+    approvalPrompt: 'force'
   }));
 
 // GET /auth/google/callback
