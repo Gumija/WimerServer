@@ -38,6 +38,9 @@ export default class DocumentViewContainer extends Component {
     let loading = document &&
       document.id === this.props.documentStore.currentFile.id &&
       document.id === this.props.documentStore.highlightsString.id;
+    console.log('Doc', document)
+    console.log('Current File', this.props.documentStore.currentFile)
+    console.log('hlstring', this.props.documentStore.highlightsString)
     return (
       <DocumentView
         document={document}
