@@ -180,76 +180,96 @@ export default class DocumentView extends Component {
             <div id="presenter" ref={(div) => this.presenter = div}>
               <ReactMarkdown source={this.props.file.file} />
             </div>
-            <div style={{ position: 'fixed', bottom: 0, right: 0, display: 'flex', flexDirection: 'row-reverse' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', paddingRight: 8, paddingBottom: 8 }}>
-                <FloatingActionButton className=""
-                  backgroundColor={'rgba(240,240,240,1)'}
-                  style={this.state.unhighlightEnabled ?
-                    { alignItems: 'center', justifyContect: 'center', border: 1, borderStyle: 'dashed', borderColor: 'grey' }
-                    :
-                    { alignItems: 'center', justifyContect: 'center', margin: 1 }
-                  }
-                  onTouchTap={this.onUnhighlightButtonPress}
-                  mini={true} >
-                  <SvgIcon>
-                    <path fill="grey" d="M15.14,3C14.63,3 14.12,3.2 13.73,3.59L2.59,14.73C1.81,15.5 1.81,16.77 2.59,17.56L5.03,20H12.69L21.41,11.27C22.2,10.5 22.2,9.23 21.41,8.44L16.56,3.59C16.17,3.2 15.65,3 15.14,3M17,18L15,20H22V18" />
-                  </SvgIcon>
-                </FloatingActionButton>
-                <FloatingActionButton className={''}
-                  backgroundColor={this.state.buttons[0].color}
-                  style={this.state.highlightEnabled === this.state.buttons[0].applierName ?
-                    { alignItems: 'center', justifyContect: 'center', border: 1, borderStyle: 'dashed', borderColor: this.state.buttons[0].color }
-                    :
-                    { alignItems: 'center', justifyContect: 'center', margin: 1 }
-                  }
-                  onTouchTap={() => this.onHighlightButtonPress(this.state.buttons[0].applierName)}>
-                  <FontIcon className="material-icons" style={{ color: 'white' }}>border_color</FontIcon>
-                </FloatingActionButton>
-                <FloatingActionButton className={''}
-                  backgroundColor={this.state.buttons[1].color}
-                  style={this.state.highlightEnabled === this.state.buttons[1].applierName ?
-                    { alignItems: 'center', justifyContect: 'center', border: 1, borderStyle: 'dashed', borderColor: this.state.buttons[1].color }
-                    :
-                    { alignItems: 'center', justifyContect: 'center', margin: 1 }
-                  }
-                  onTouchTap={() => this.onHighlightButtonPress(this.state.buttons[1].applierName)}>
-                  <FontIcon className="material-icons" style={{ color: 'white' }}>border_color</FontIcon>
-                </FloatingActionButton>
-                <FloatingActionButton className={''}
-                  backgroundColor={this.state.buttons[2].color}
-                  style={this.state.highlightEnabled === this.state.buttons[2].applierName ?
-                    { alignItems: 'center', justifyContect: 'center', border: 1, borderStyle: 'dashed', borderColor: this.state.buttons[2].color }
-                    :
-                    { alignItems: 'center', justifyContect: 'center', margin: 1 }
-                  }
-                  onTouchTap={() => this.onHighlightButtonPress(this.state.buttons[2].applierName)}>
-                  <FontIcon className="material-icons" style={{ color: 'white' }}>border_color</FontIcon>
-                </FloatingActionButton>
+            {!this.props.user &&
+              <div style={{
+                position: 'fixed', bottom: 0, right: 0, margin: 8, display: 'flex',
+                alignItems: 'center', justifyContent: 'center', maxWidth: 180,
+                wordWrap: 'normal', backgroundColor: 'rgba(200,200,200,.6)',
+              }}>
+                Log in to add highlights
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'flex-end', paddingBottom: 8, paddingRight: 8 }}>
-                <FloatingActionButton className={'fab-add'}
-                  backgroundColor={'rgba(255,255,255,1)'}
-                  style={{ alignItems: 'center', justifyContect: 'center' }}
-                  onTouchTap={() => this.onShowColorColorPicker()}
-                  mini={true}>
-                  <FontIcon className="material-icons" style={{ color: 'grey' }}>add</FontIcon>
-                </FloatingActionButton>
-                {this.state.showColorPicker &&
-                  <div>
-                    <div style={{ position: 'fixed', top: 0, bottom: 0, left: 0, right: 0 }}
-                      onClick={() => this.onShowColorColorPicker()}
-                    />
-                    <div style={{ transform: 'rotate(180deg)', marginBottom: 10, marginRight: 2 }}>
-                      <GithubPicker colors={[
+            }
+            {this.props.user && this.props.user.id !== this.props.document.userId &&
+              <div style={{
+                position: 'fixed', bottom: 0, right: 0, margin: 8, display: 'flex',
+                alignItems: 'center', justifyContent: 'center', maxWidth: 180,
+                wordWrap: 'normal', backgroundColor: 'rgba(200,200,200,.6)'
+              }}>
+                You can only add highlights to your own version of the document.
+              </div>
+            }
+            {this.props.user && this.props.user.id === this.props.document.userId &&
+              <div style={{ position: 'fixed', bottom: 0, right: 0, display: 'flex', flexDirection: 'row-reverse' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', paddingRight: 8, paddingBottom: 8 }}>
+                  <FloatingActionButton className=""
+                    backgroundColor={'rgba(240,240,240,1)'}
+                    style={this.state.unhighlightEnabled ?
+                      { alignItems: 'center', justifyContect: 'center', border: 1, borderStyle: 'dashed', borderColor: 'grey' }
+                      :
+                      { alignItems: 'center', justifyContect: 'center', margin: 1 }
+                    }
+                    onTouchTap={this.onUnhighlightButtonPress}
+                    mini={true} >
+                    <SvgIcon>
+                      <path fill="grey" d="M15.14,3C14.63,3 14.12,3.2 13.73,3.59L2.59,14.73C1.81,15.5 1.81,16.77 2.59,17.56L5.03,20H12.69L21.41,11.27C22.2,10.5 22.2,9.23 21.41,8.44L16.56,3.59C16.17,3.2 15.65,3 15.14,3M17,18L15,20H22V18" />
+                    </SvgIcon>
+                  </FloatingActionButton>
+                  <FloatingActionButton className={''}
+                    backgroundColor={this.state.buttons[0].color}
+                    style={this.state.highlightEnabled === this.state.buttons[0].applierName ?
+                      { alignItems: 'center', justifyContect: 'center', border: 1, borderStyle: 'dashed', borderColor: this.state.buttons[0].color }
+                      :
+                      { alignItems: 'center', justifyContect: 'center', margin: 1 }
+                    }
+                    onTouchTap={() => this.onHighlightButtonPress(this.state.buttons[0].applierName)}>
+                    <FontIcon className="material-icons" style={{ color: 'white' }}>border_color</FontIcon>
+                  </FloatingActionButton>
+                  <FloatingActionButton className={''}
+                    backgroundColor={this.state.buttons[1].color}
+                    style={this.state.highlightEnabled === this.state.buttons[1].applierName ?
+                      { alignItems: 'center', justifyContect: 'center', border: 1, borderStyle: 'dashed', borderColor: this.state.buttons[1].color }
+                      :
+                      { alignItems: 'center', justifyContect: 'center', margin: 1 }
+                    }
+                    onTouchTap={() => this.onHighlightButtonPress(this.state.buttons[1].applierName)}>
+                    <FontIcon className="material-icons" style={{ color: 'white' }}>border_color</FontIcon>
+                  </FloatingActionButton>
+                  <FloatingActionButton className={''}
+                    backgroundColor={this.state.buttons[2].color}
+                    style={this.state.highlightEnabled === this.state.buttons[2].applierName ?
+                      { alignItems: 'center', justifyContect: 'center', border: 1, borderStyle: 'dashed', borderColor: this.state.buttons[2].color }
+                      :
+                      { alignItems: 'center', justifyContect: 'center', margin: 1 }
+                    }
+                    onTouchTap={() => this.onHighlightButtonPress(this.state.buttons[2].applierName)}>
+                    <FontIcon className="material-icons" style={{ color: 'white' }}>border_color</FontIcon>
+                  </FloatingActionButton>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'flex-end', paddingBottom: 8, paddingRight: 8 }}>
+                  <FloatingActionButton className={'fab-add'}
+                    backgroundColor={'rgba(255,255,255,1)'}
+                    style={{ alignItems: 'center', justifyContect: 'center' }}
+                    onTouchTap={() => this.onShowColorColorPicker()}
+                    mini={true}>
+                    <FontIcon className="material-icons" style={{ color: 'grey' }}>add</FontIcon>
+                  </FloatingActionButton>
+                  {this.state.showColorPicker &&
+                    <div>
+                      <div style={{ position: 'fixed', top: 0, bottom: 0, left: 0, right: 0 }}
+                        onClick={() => this.onShowColorColorPicker()}
+                      />
+                      <div style={{ transform: 'rotate(180deg)', marginBottom: 10, marginRight: 2 }}>
+                        <GithubPicker colors={[
                     /*'rgba(255,0,0,0.6)',*/ 'rgba(184, 0, 0, 0.6)', 'rgba(219, 62, 0, 0.6)', 'rgba(252, 203, 0, 0.6)', 'rgba(0, 139, 2, 0.6)',
-                        'rgba(0, 107, 118, 0.6)', 'rgba(18, 115, 222, 0.6)', 'rgba(0, 77, 207, 0.6)', 'rgba(83, 0, 235, 0.6)',
-                      ]}
-                        onChangeComplete={this.addNewColor} />
+                          'rgba(0, 107, 118, 0.6)', 'rgba(18, 115, 222, 0.6)', 'rgba(0, 77, 207, 0.6)', 'rgba(83, 0, 235, 0.6)',
+                        ]}
+                          onChangeComplete={this.addNewColor} />
+                      </div>
                     </div>
-                  </div>
-                }
+                  }
+                </div>
               </div>
-            </div>
+            }
           </div>
 
           :

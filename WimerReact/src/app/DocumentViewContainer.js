@@ -48,6 +48,7 @@ export default class DocumentViewContainer extends Component {
         loading={loading}
         onHighlightAdded={this.onHighlightAdded}
         onHighlightRemoved={this.onHighlightRemoved}
+        user={this.props.userStore.currentUser}
       />
     );
   }
