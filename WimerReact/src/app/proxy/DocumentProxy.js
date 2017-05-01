@@ -31,6 +31,13 @@ class DocumentProxy {
       body: JSON.stringify({ title: title }),
     })
   }
+
+  addOwnDocument = async (documentId) => {
+    await fetch(`/documents/${documentId}`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+  }
 }
 
 var documentProxy = new DocumentProxy();

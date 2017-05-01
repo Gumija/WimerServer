@@ -46,6 +46,10 @@ class DocumentService {
   updateTitle(document) {
     proxy.updateTitle(document.id, document.title);
   }
+
+  addOwnDocument = async (documentId) => {
+    await proxy.addOwnDocument(documentId);
+  }
 }
 
 var documentService = new DocumentService();

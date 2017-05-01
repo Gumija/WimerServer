@@ -215,8 +215,10 @@ app.get('/auth/google/callback', _passport2.default.authenticate('google', {
 }));
 
 app.get('/logout', function (req, res) {
-  req.logout();
-  res.sendStatus(200);
+  req.session.destroy(function (err) {
+    //Inside a callback… bulletproof!
+    res.sendStatus(200);
+  });
 });
 
 app.get('/highlight/:documentId/:userId', function (req, res) {

@@ -206,8 +206,10 @@ app.get('/auth/google/callback',
   }));
 
 app.get('/logout', (req, res) => {
-  req.logout();
-  res.sendStatus(200);
+  req.session.destroy(function (err) {
+    //Inside a callback… bulletproof!
+    res.sendStatus(200);
+  });
 })
 
 app.get('/highlight/:documentId/:userId', (req, res) => {
