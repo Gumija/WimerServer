@@ -200,6 +200,11 @@ app.get('/auth/google/callback',
     failureRedirect: 'back',
   }));
 
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.sendStatus(200);
+})
+
 app.get('/highlight/:documentId/:userId', (req, res) => {
   dbIniter.query(mysql.format(highlights.selectByDocumentAndUser,
     [
