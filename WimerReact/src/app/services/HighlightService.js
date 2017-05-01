@@ -23,8 +23,8 @@ class HighlightService {
     })
   }
 
-  getHighlights = async (documentId) => {
-    let jsonData = await proxy.getHighlights(documentId, UserStore.currentUser.id);
+  getHighlights = async (documentId, userId) => {
+    let jsonData = await proxy.getHighlights(documentId, userId);
     let str = 'type:textContent';
     if (Object.keys(jsonData).length === 0 && jsonData.constructor === Object) {
       // empty response
