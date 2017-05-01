@@ -193,7 +193,7 @@ export default class DocumentView extends Component {
               </div>
             }
             {this.props.user && this.props.user.id !== this.props.document.userId &&
-              <RaisedButton label="START YOUR OWN HIGHLIGHTING" primary={true} style={{
+              <RaisedButton label="START HIGHLIGHTING" primary={true} style={{
                 position: 'fixed', bottom: 0, right: 0, margin: 8,
               }} />
             }
