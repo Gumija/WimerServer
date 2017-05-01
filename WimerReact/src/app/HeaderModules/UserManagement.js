@@ -18,7 +18,8 @@ export default class UserManagerment extends Component {
 
   onLogout = () => {
     fetch('/logout');
-    this.props.userStore.setCurrentUser(undefined);
+    this.props.userStore.resetStore();
+    this.props.documentStore.resetStore();
     this.setState({ redirect: true })
   }
 

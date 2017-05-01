@@ -19,7 +19,9 @@ export default class HeaderHome extends Component {
           <IconButton><MenuIcon /></IconButton>
         }
         iconElementRight={
-          <UserManagement />
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+            <UserManagement />
+          </div>
         }
         style={{ position: 'fixed', top: 0 }} />
     );

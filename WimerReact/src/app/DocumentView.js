@@ -185,6 +185,7 @@ export default class DocumentView extends Component {
                 position: 'fixed', bottom: 0, right: 0, margin: 8, display: 'flex',
                 alignItems: 'center', justifyContent: 'center', maxWidth: 180,
                 wordWrap: 'normal', backgroundColor: 'rgba(200,200,200,.6)',
+                padding: 16, textAlign: 'center', borderRadius: 2,
               }}>
                 Log in to add highlights
               </div>
@@ -193,7 +194,8 @@ export default class DocumentView extends Component {
               <div style={{
                 position: 'fixed', bottom: 0, right: 0, margin: 8, display: 'flex',
                 alignItems: 'center', justifyContent: 'center', maxWidth: 180,
-                wordWrap: 'normal', backgroundColor: 'rgba(200,200,200,.6)'
+                wordWrap: 'normal', backgroundColor: 'rgba(200,200,200,.6)',
+                padding: 16, textAlign: 'center', borderRadius: 2,
               }}>
                 You can only add highlights to your own version of the document.
               </div>

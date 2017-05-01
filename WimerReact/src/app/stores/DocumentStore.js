@@ -18,6 +18,18 @@ class DocumentStore {
     return this.docInfos.sort((a, b) => a.last_opened > b.last_opened ? -1 : 1);
   }
 
+  @action resetStore() {
+    this.docInfos = [];
+    this.currentFile = {
+      id: -1,
+      file: '',
+    }
+    this.highlightsString = {
+      id: -1,
+      str: '',
+    }
+  }
+
   @action addDocumentInfo(docinfo) {
     let doc = this.docInfos.find(doc => doc.id === docinfo.id)
     if (doc) {
