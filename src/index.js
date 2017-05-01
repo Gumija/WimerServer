@@ -338,8 +338,8 @@ app.get('/documents/:documentId/:userId', (req, res) => {
 
 app.post('/documents/:documentId', (req, res) => {
   if (req.user) {
-    console.log('QUERY', mysql.format(documents.selectById, [req.params.documentId, req.user.id]));
-    dbIniter.query(mysql.format(documents.selectById, [req.params.documentId, req.user.id]),
+    console.log('QUERY', mysql.format(documents.selectByDocumentId, [req.params.documentId]));
+    dbIniter.query(mysql.format(documents.selectByDocumentId, [req.params.documentId]),
       (error, results, fields) => {
         if (error) {
           console.log(error);

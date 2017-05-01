@@ -310,8 +310,8 @@ app.get('/documents/:documentId/:userId', function (req, res) {
 
 app.post('/documents/:documentId', function (req, res) {
   if (req.user) {
-    console.log('QUERY', _mysql2.default.format(documents.selectById, [req.params.documentId, req.user.id]));
-    dbIniter.query(_mysql2.default.format(documents.selectById, [req.params.documentId, req.user.id]), function (error, results, fields) {
+    console.log('QUERY', _mysql2.default.format(documents.selectByDocumentId, [req.params.documentId]));
+    dbIniter.query(_mysql2.default.format(documents.selectByDocumentId, [req.params.documentId]), function (error, results, fields) {
       if (error) {
         console.log(error);
         res.sendStatus(500);
