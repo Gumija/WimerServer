@@ -23,10 +23,15 @@ let documents = {
   'SELECT * \
    FROM documents \
    WHERE user_id = ?',
+  selectByDocumentId:
+  'SELECT * \
+    FROM documents \
+    WHERE id = ?',
   selectById:
   'SELECT * \
      FROM documents \
-     WHERE id = ?',
+     WHERE id = ?\
+     AND user_id = ?',
   update:
   'UPDATE documents \
      SET title = ? \
@@ -279,8 +284,8 @@ app.post('/highlight', (req, res) => {
 })
 
 app.get('/documents/download/:id', (req, res) => {
-  console.log(mysql.format(documents.selectById, [req.params.id]));
-  dbIniter.query(mysql.format(documents.selectById, [req.params.id]),
+  console.log(mysql.format(documents.selectByDocumentId, [req.params.id]));
+  dbIniter.query(mysql.format(documents.selectByDocumentId, [req.params.id]),
     (error, results, fields) => {
       if (error) {
         console.log(error);
@@ -327,6 +332,44 @@ app.get('/documents/:documentId/:userId', (req, res) => {
       res.json(results);
     }
   )
+})
+
+app.post('/documents/:documentId', (req, res) => {
+  if (req.user) {
+    dbIniter.query(mysql.format(documents.selectById, [req.params.documentId, req.user.id]),
+      (error, results, fields) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        if (results.length) {
+          dbIniter.query(mysql.format(documents.insert,
+            [
+              0,
+              results[0].title,
+              results[0].path,
+              results[0].mimetype,
+              results[0].encoding,
+              req.user.id,
+            ]),
+            (error, results, fields) => {
+              if (error) {
+                console.log(error);
+                res.sendStatus(500);
+                return;
+              }
+              console.log(results);
+              res.json({ id: results.insertId });
+            }
+          )
+        } else {
+          res.sendStatus(500);
+        }
+      })
+  } else {
+    res.sendStatus(403) // 403 Forbidden
+  }
 })
 
 app.get('/documents',

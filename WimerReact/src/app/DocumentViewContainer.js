@@ -32,9 +32,18 @@ export default class DocumentViewContainer extends Component {
     HighlightService.removeHighlight(hl);
   }
 
+  onStartHighlighting = () => {
+    let document = this.props.documentStore.docInfos.find((doc) =>
+      doc.id === parseInt(this.props.match.params.documentId, 10) &&
+      doc.userId === parseInt(this.props.match.params.userId, 10));
+    DocumentService.addOwnDocument(document.id);
+    let userId = this.props.userStore.currentUser.id;
+    this.context.history.push(`/document/${document.id}/${userId}`)
+  }
+
   render() {
     // eslint-disable-next-line
-    let document = this.props.documentStore.docInfos.find((doc) => 
+    let document = this.props.documentStore.docInfos.find((doc) =>
       doc.id === parseInt(this.props.match.params.documentId, 10) &&
       doc.userId === parseInt(this.props.match.params.userId, 10));
     let loading = document &&
@@ -49,6 +58,7 @@ export default class DocumentViewContainer extends Component {
         onHighlightAdded={this.onHighlightAdded}
         onHighlightRemoved={this.onHighlightRemoved}
         user={this.props.userStore.currentUser}
+        onStartHighlighting={this.onStartHighlighting}
       />
     );
   }

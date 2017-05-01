@@ -171,6 +171,9 @@ export default class DocumentView extends Component {
     this.onHighlightButtonPress(className);
   }
 
+  onStartHighlighting = () => {
+    this.props.onStartHighlighting();
+  }
 
   render() {
     return (
@@ -193,7 +196,7 @@ export default class DocumentView extends Component {
               </div>
             }
             {this.props.user && this.props.user.id !== this.props.document.userId &&
-              <RaisedButton label="START HIGHLIGHTING" primary={true} style={{
+              <RaisedButton onTouchTap={this.onStartHighlighting} label="START HIGHLIGHTING" primary={true} style={{
                 position: 'fixed', bottom: 0, right: 0, margin: 8,
               }} />
             }
