@@ -350,7 +350,7 @@ app.post('/documents/:documentId', (req, res) => {
         if (results.length) {
           dbIniter.query(mysql.format(documents.insert,
             [
-              0,
+              results[0].id,
               results[0].title,
               results[0].path,
               results[0].type,
