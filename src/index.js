@@ -61,7 +61,11 @@ let users = {
    WHERE id = ?',
   insert:
   'INSERT INTO users \
-    VALUES (0, ?, ?, ?)'
+    VALUES (0, ?, ?, ?)',
+  update:
+  'UPDATE user \
+   SET name = ?, email = ?, google_id = ? \
+   WHERE id = ?'
 }
 
 let dbIniter = new DbIniter();
@@ -103,6 +107,8 @@ passport.use(new GoogleAuth.OAuth2Strategy({
   passReqToCallback: true
 },
   (request, accessToken, refreshToken, profile, done) => {
+    console.log('Access Token: ', accessToken)
+    console.log('Refresh Token: ', refreshToken)
     process.nextTick(() => {
       // Check if user exists with google id
       dbIniter.query(mysql.format(users.selectByGoogleId, [profile.id]),
