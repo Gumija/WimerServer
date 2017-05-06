@@ -51,9 +51,10 @@ class DocumentProxy {
   }
 
   getVisited = async() => {
-    let res = await fetch('/visits');
+    let res = await fetch('/visits',{
+      credentials: 'include',
+    });
     let json =  await res.json();
-    console.log('Visited json: ', json);
     return json;
   }
 }
