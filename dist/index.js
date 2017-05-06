@@ -99,7 +99,8 @@ var users = {
 
 var visits = {
   insert: 'INSERT INTO visits \
-    VALUES (?, ?, ?, ?)',
+   VALUES (?, ?, ?, ?) \
+   ON DUPLICATE KEY UPDATE date = ?',
   selectByUserId: 'SELECT v.document_id, v.document_user_id, v.date , d.title \
    FROM visits v\
    JOIN documents d ON v.document_id = d.id \
@@ -396,8 +397,8 @@ app.post('/visits/:documentId/:userId', function (req, res) {
   if (req.user) {
     console.log('PARAMS: ', req.params);
     console.log('BODY: ', req.body);
-    console.log(_mysql2.default.format(visits.insert, [req.user.id, req.params.documentId, req.params.userId, new Date()]));
-    dbIniter.query(_mysql2.default.format(visits.insert, [req.user.id, req.params.documentId, req.params.userId, new Date()]), function (error, results, field) {
+    console.log(_mysql2.default.format(visits.insert, [req.user.id, req.params.documentId, req.params.userId, new Date(), new Date()]));
+    dbIniter.query(_mysql2.default.format(visits.insert, [req.user.id, req.params.documentId, req.params.userId, new Date(), new Date()]), function (error, results, field) {
       if (error) {
         console.log(error);
         res.sendStatus(500);

@@ -89,6 +89,7 @@ var DbInitializer = function DbInitializer() {
       `document_id` INT NOT NULL,\
       `document_user_id` INT NOT NULL,\
       `date` DATETIME NOT NULL\
+      PRIMARY KEY (`user_id`, `document_id`, `document_user_id`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;", function () {
             // this.connection.end();
             console.log('Initiing finished!');

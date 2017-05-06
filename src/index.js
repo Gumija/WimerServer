@@ -76,7 +76,8 @@ let users = {
 let visits = {
   insert:
   'INSERT INTO visits \
-    VALUES (?, ?, ?, ?)',
+   VALUES (?, ?, ?, ?) \
+   ON DUPLICATE KEY UPDATE date = ?',
   selectByUserId:
   'SELECT v.document_id, v.document_user_id, v.date , d.title \
    FROM visits v\
@@ -455,11 +456,13 @@ app.post('/visits/:documentId/:userId', (req, res) => {
       req.params.documentId,
       req.params.userId,
       new Date(),
+      new Date(),
       ]));
     dbIniter.query(mysql.format(visits.insert, [
       req.user.id,
       req.params.documentId,
       req.params.userId,
+      new Date(),
       new Date(),
       ]),
       (error, results, field) => {
