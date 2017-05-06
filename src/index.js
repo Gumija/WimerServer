@@ -446,19 +446,20 @@ app.post('/upload', upload.single('doc'), (req, res) => {
   }
 })
 
-app.post('/visits', (req, res) => {
+app.post('/visits/:documentId/:userId', (req, res) => {
   if (req.user) {
+    console.log('PARAMS: ', req.params)
     console.log('BODY: ', req.body)
     console.log(mysql.format(visits.insert, [
       req.user.id,
-      req.body.documentId,
-      req.body.userId,
+      req.params.documentId,
+      req.params.userId,
       new Date(),
       ]));
     dbIniter.query(mysql.format(visits.insert, [
       req.user.id,
-      req.body.documentId,
-      req.body.userId,
+      req.params.documentId,
+      req.params.userId,
       new Date(),
       ]),
       (error, results, field) => {

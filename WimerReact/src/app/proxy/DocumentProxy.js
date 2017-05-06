@@ -40,7 +40,7 @@ class DocumentProxy {
   }
 
   setVisited = (documentId, userId) => {
-    fetch('/visits', {
+    fetch(`/visits/${documentId}/${userId}`, {
       method: 'POST',
       credentials: 'include',
       body: JSON.stringify({

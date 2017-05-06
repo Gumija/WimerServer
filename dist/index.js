@@ -392,11 +392,12 @@ app.post('/upload', upload.single('doc'), function (req, res) {
   }
 });
 
-app.post('/visits', function (req, res) {
+app.post('/visits/:documentId/:userId', function (req, res) {
   if (req.user) {
+    console.log('PARAMS: ', req.params);
     console.log('BODY: ', req.body);
-    console.log(_mysql2.default.format(visits.insert, [req.user.id, req.body.documentId, req.body.userId, new Date()]));
-    dbIniter.query(_mysql2.default.format(visits.insert, [req.user.id, req.body.documentId, req.body.userId, new Date()]), function (error, results, field) {
+    console.log(_mysql2.default.format(visits.insert, [req.user.id, req.params.documentId, req.params.userId, new Date()]));
+    dbIniter.query(_mysql2.default.format(visits.insert, [req.user.id, req.params.documentId, req.params.userId, new Date()]), function (error, results, field) {
       if (error) {
         console.log(error);
         res.sendStatus(500);
