@@ -86,7 +86,6 @@ export default class Header extends Component {
         iconElementRight={
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             <Versions />
-            <Share />
             <UserManagement />
           </div>
         }
