@@ -450,8 +450,8 @@ app.post('/visits', (req, res) => {
   if (req.user) {
     dbIniter.query(mysql.format(visits.insert, [
       req.user.id,
-      req.body.document.id,
-      req.body.user_id,
+      req.body.documentId,
+      req.body.userId,
       new Date(),
       ]),
       (error, results, field) => {
