@@ -383,15 +383,18 @@ app.get('/documents/versions/:documentId', function (req, res) {
   console.log('----- VERSIONS ----');
   console.log('QUERY', _mysql2.default.format(documents.getVersions, [req.params.documentId]));
   console.log('--- DOIN\' IT ---');
-  dbIniter.query(_mysql2.default.format(documents.getVersions, [req.params.documentId]), function (error, results, fields) {
-    if (error) {
-      console.log(error);
-      res.sendStatus(500);
-      return;
-    }
-    console.log(results);
-    res.json(results);
-  });
+  // dbIniter.query(mysql.format(documents.getVersions,[req.params.documentId]),
+  //     (error, results, fields) => {
+  //       if (error) {
+  //         console.log(error);
+  //         res.sendStatus(500);
+  //         return;
+  //       }
+  //       console.log(results);
+  //       res.json(results);
+  //     }
+  //   )
+  res.sendStatus(200);
 });
 
 app.post('/upload', upload.single('doc'), function (req, res) {
