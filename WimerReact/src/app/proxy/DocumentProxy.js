@@ -57,6 +57,14 @@ class DocumentProxy {
     let json =  await res.json();
     return json;
   }
+
+  getVersions = async(documentId) => {
+    let res = await fetch(`/documents/versions/${documentId}`,{
+      credentials: 'include',
+    });
+    let json =  await res.json();
+    return json;
+  }
 }
 
 var documentProxy = new DocumentProxy();

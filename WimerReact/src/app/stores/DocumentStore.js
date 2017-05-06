@@ -16,6 +16,16 @@ class DocumentStore {
 
   @observable recentDocs = []
 
+  @observable versions = []
+
+  @action clearVersions() {
+    this.versions = [];
+  }
+
+  @action addVersion(version){
+    this.versions.push(version);
+  }
+
   @action addRecentDocument(recentDoc){
     let doc = this.recentDocs.find(doc => doc.documentId === recentDoc.documentId && doc.userId === recentDoc.userId)
     if (doc) {
@@ -34,6 +44,8 @@ class DocumentStore {
       id: -1,
       str: '',
     }
+    this.recentDocs = [];
+    this.versions = [];
   }
 
   @action addDocumentInfo(docinfo) {

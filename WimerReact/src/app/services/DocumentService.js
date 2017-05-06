@@ -71,6 +71,23 @@ class DocumentService {
       }
     }
   }
+
+  getVersions = async (documentId) => {
+    let json = await proxy.getVersions(documentId);
+    if (Object.keys(json).length === 0 && json.constructor === Object) {
+      // empty response
+    } else {
+      DocumentStore.clearVersions();
+      for (let version of json) {
+        DocumentStore.addVersion({
+          id: version.id,
+          userId: version.user_id,
+          title: version.title,
+          name: version.name,
+        })
+      }
+    }
+  }
 }
 
 var documentService = new DocumentService();

@@ -37,6 +37,11 @@ let documents = {
      SET title = ? \
      WHERE id = ? \
      AND user_id = ?',
+  getVersions:
+  'SELECT d.id, d.user_id, d.title, u.name\
+   FROM documents d\
+   JOIN users u ON d.user_id = u.id\
+   WHERE d.id = ?'
 }
 
 let highlights = {
@@ -419,6 +424,20 @@ app.get('/documents',
     }
   })
 
+app.get('/documents/versions/:documentId', (req, res) => {
+  dbIniter.query(mysql.format(documents.getVersions,[req.params.documentId]),
+      (error, results, fields) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(results);
+        res.json(results);
+      }
+    )
+})
+
 app.post('/upload', upload.single('doc'), (req, res) => {
   if (req.user) {
     let file = req.file;
@@ -481,23 +500,19 @@ app.post('/visits/:documentId/:userId', (req, res) => {
 })
 
 app.get('/visits', (req, res) => {
-  console.log('----- VISITS ------')
   if (req.user) {
     dbIniter.query(mysql.format(visits.selectByUserId, [req.user.id]),
       (error, results, field) => {
         if (error) {
-          console.log('Error:')
           console.log(error);
           res.sendStatus(500);
           return;
         }
-        console.log('Results:')
         console.log(results);
         res.json(results);
       }
     )
   } else {
-    console.log('no user')
     res.json();
   }
 })

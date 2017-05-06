@@ -34,6 +34,7 @@ export default class DocumentViewContainer extends Component {
     this.props.documentStore.setHighlights({ id: documentId, str: await HighlightService.getHighlights(documentId, userId) });
 
     DocumentService.visited(documentId, userId);
+    DocumentService.getVersions(documentId);
   }
 
   onHighlightAdded = (hl) => {
