@@ -312,6 +312,21 @@ app.post('/documents/update/:id', function (req, res) {
   }
 });
 
+app.get('/documents/versions/:documentId', function (req, res) {
+  console.log('----- VERSIONS ----');
+  console.log('QUERY', _mysql2.default.format(documents.getVersions, [req.params.documentId]));
+  console.log('--- DOIN\' IT ---');
+  dbIniter.query(_mysql2.default.format(documents.getVersions, [req.params.documentId]), function (error, results, fields) {
+    if (error) {
+      console.log(error);
+      res.sendStatus(500);
+      return;
+    }
+    console.log(results);
+    res.json(results);
+  });
+});
+
 app.get('/documents/:documentId/:userId', function (req, res) {
   dbIniter.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.documentId, 10), parseInt(req.params.userId, 10)]), function (error, results, fields) {
     if (error) {
@@ -377,24 +392,6 @@ app.get('/documents', function (req, res) {
   } else {
     res.json({});
   }
-});
-
-app.get('/documents/versions/:documentId', function (req, res) {
-  console.log('----- VERSIONS ----');
-  console.log('QUERY', _mysql2.default.format(documents.getVersions, [req.params.documentId]));
-  console.log('--- DOIN\' IT ---');
-  // dbIniter.query(mysql.format(documents.getVersions,[req.params.documentId]),
-  //     (error, results, fields) => {
-  //       if (error) {
-  //         console.log(error);
-  //         res.sendStatus(500);
-  //         return;
-  //       }
-  //       console.log(results);
-  //       res.json(results);
-  //     }
-  //   )
-  res.sendStatus(200);
 });
 
 app.post('/upload', upload.single('doc'), function (req, res) {
