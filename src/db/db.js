@@ -21,7 +21,7 @@ export default class DbInitializer {
       }
     }
     this.connection.on('error', (err) => {
-      console.log('Connection Error:' , err);
+      console.log('Connection Error:', err);
       this.connection = null;
       this.setupConnection();
     })
@@ -71,11 +71,18 @@ export default class DbInitializer {
       `google_id` varchar(45) NOT NULL,\
       PRIMARY KEY (`id`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;",
-          () => {
-            // this.connection.end();
-            console.log('Initiing finished!');
-          }
-        )));
+          () => this.queryWithConnection("\
+      CREATE TABLE IF NOT EXISTS `visits` (\
+      `user_id` INT NOT NULL,\
+      `document_id` INT NOT NULL,\
+      `document_user_id` INT NOT NULL,\
+      `date` DATETIME NOT NULL\
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;",
+            () => {
+              // this.connection.end();
+              console.log('Initiing finished!');
+            }
+          ))));
 
   }
 

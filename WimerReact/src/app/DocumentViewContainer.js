@@ -32,6 +32,8 @@ export default class DocumentViewContainer extends Component {
     let document = props.documentStore.docInfos.find((doc) => doc.id === documentId);
     this.props.documentStore.setCurrentFile({ id: document.id, file: await DocumentService.getFile(document) })
     this.props.documentStore.setHighlights({ id: documentId, str: await HighlightService.getHighlights(documentId, userId) });
+
+    DocumentService.visited(documentId, userId);
   }
 
   onHighlightAdded = (hl) => {

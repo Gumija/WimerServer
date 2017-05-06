@@ -24,7 +24,7 @@ export default class Home extends Component {
   }
 
   async componentWillMount() {
-    await DocumentService.getDocuments();
+    await DocumentService.getVisited();
   }
 
   handleDrop = async (acceptedFiles) => {
@@ -62,8 +62,7 @@ export default class Home extends Component {
           userId: this.props.userStore.currentUser.id
         }
         this.props.documentStore.addDocumentInfo(doc);
-        // TODO: navigate to document
-
+        this.props.history.push(`/document/${json.id}/${this.props.userStore.currentUser.id}`)
 
       } else {
         // TODO: show error message
@@ -89,7 +88,7 @@ export default class Home extends Component {
         <p className="section-header">Recent</p>
         <div className="card-container">
           {this.props.documentStore.recentDocs.map((doc) =>
-            <DocumentCard document={doc} key={doc.id} />
+            <DocumentCard document={doc} key={doc.documentId + '_' + doc.userId} />
           )}
         </div>
         {this.state.showLoginPrompt &&

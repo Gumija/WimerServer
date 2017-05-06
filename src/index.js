@@ -73,6 +73,19 @@ let users = {
    WHERE id = ?'
 }
 
+let visits = {
+  insert:
+  'INSERT INTO visits \
+    VALUES (?, ?, ?, ?)',
+  selectByUserId:
+  'SELECT v.document_id, v.document_user_id, v.date , d.title \
+   FROM visits v\
+   JOIN documents d ON v.document_id = d.id \
+										AND v.document_user_id = d.user_id\
+   WHERE v.user_id = ? \
+   ORDER BY v.date DESC;'
+}
+
 let dbIniter = new DbIniter();
 dbIniter.initDB();
 
@@ -430,6 +443,47 @@ app.post('/upload', upload.single('doc'), (req, res) => {
     )
   } else {
     res.sendStatus(403); // 403 Forbidden
+  }
+})
+
+app.post('/visits', (req, res) => {
+  if (req.user) {
+    dbIniter.query(mysql.format(visits.insert, [
+      req.user.id,
+      req.body.document.id,
+      req.body.user_id,
+      new Date(),
+      ]),
+      (error, results, field) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(results);
+        res.sendStatus(200);
+      }
+    )
+  } else {
+    res.sendStatus(403); // 403 Forbidden
+  }
+})
+
+app.get('/visits', (req, res) => {
+  if (req.user) {
+    dbIniter.query(mysql.format(visits.selectByUserId, [req.user.id]),
+      (error, results, field) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(results);
+        res.json(results);
+      }
+    )
+  } else {
+    res.json();
   }
 })
 

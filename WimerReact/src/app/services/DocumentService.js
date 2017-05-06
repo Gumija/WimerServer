@@ -1,4 +1,5 @@
 import DocumentStore from '../stores/DocumentStore';
+import UserStore from '../stores/UserStore';
 import proxy from '../proxy/DocumentProxy';
 
 class DocumentService {
@@ -32,7 +33,7 @@ class DocumentService {
           preview: "",
           last_opened: new Date(),
           fileType: docinfo.type,
-          userId: docinfo.user_id,          
+          userId: docinfo.user_id,
         })
       }
     }
@@ -49,6 +50,28 @@ class DocumentService {
 
   addOwnDocument = async (documentId) => {
     await proxy.addOwnDocument(documentId);
+  }
+
+  visited = (documentId, userId) => {
+    proxy.setVisited(documentId, userId);
+  }
+
+  getVisited = async () => {
+    if (UserStore.currentUser) {
+      let json = await proxy.getVisited();
+      if (Object.keys(json).length === 0 && json.constructor === Object) {
+        // empty response
+      } else {
+        for (let recent of json) {
+          DocumentStore.addDocumentInfo({
+            documentId: recent.dcoument_id,
+            userId: recent.document_user_id,
+            date: recent.date,
+            title: recent.title,
+          })
+        }
+      }
+    }
   }
 }
 

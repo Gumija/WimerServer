@@ -14,7 +14,7 @@ export default class DocumentCard extends Component {
         />
         <Divider />
         <CardActions style={{display: 'flex', justifyContent: 'flex-end'}}>
-          <Link to={`/document/${this.props.document.id}/${this.props.document.userId}`}>
+          <Link to={`/document/${this.props.document.documentId}/${this.props.document.userId}`}>
             <RaisedButton>
               OPEN
             </RaisedButton>

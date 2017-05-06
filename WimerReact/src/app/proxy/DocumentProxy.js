@@ -38,6 +38,22 @@ class DocumentProxy {
       credentials: 'include',
     })
   }
+
+  setVisited = (documentId, userId) => {
+    fetch('/visits', {
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify({
+        documentId: documentId,
+        userId: userId,
+      })
+    })
+  }
+
+  getVisited = async() => {
+    let res = await fetch('/visits');
+    return await res.json();
+  }
 }
 
 var documentProxy = new DocumentProxy();

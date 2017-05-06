@@ -1,4 +1,4 @@
-import { observable, computed, action } from 'mobx';
+import { observable, action } from 'mobx';
 
 class DocumentStore {
 
@@ -14,8 +14,14 @@ class DocumentStore {
     str: '',
   }
 
-  @computed get recentDocs() {
-    return this.docInfos.sort((a, b) => a.last_opened > b.last_opened ? -1 : 1);
+  @observable recentDocs = []
+
+  @action addRecentDocument(recentDoc){
+    let doc = this.recentDocs.find(doc => doc.documentId === recentDoc.documentId && doc.userId === recentDoc.userId)
+    if (doc) {
+      this.recentDocs.splice(this.recentDocs.indexOf(doc), 1);
+    }
+    this.recentDocs.push(recentDoc);
   }
 
   @action resetStore() {
