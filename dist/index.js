@@ -380,7 +380,9 @@ app.get('/documents', function (req, res) {
 });
 
 app.get('/documents/versions/:documentId', function (req, res) {
+  console.log('----- VERSIONS ----');
   console.log('QUERY', _mysql2.default.format(documents.getVersions, [req.params.documentId]));
+  console.log('--- DOIN\' IT ---');
   dbIniter.query(_mysql2.default.format(documents.getVersions, [req.params.documentId]), function (error, results, fields) {
     if (error) {
       console.log(error);
