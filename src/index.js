@@ -448,6 +448,12 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 
 app.post('/visits', (req, res) => {
   if (req.user) {
+    console.log(mysql.format(visits.insert, [
+      req.user.id,
+      req.body.documentId,
+      req.body.userId,
+      new Date(),
+      ]));
     dbIniter.query(mysql.format(visits.insert, [
       req.user.id,
       req.body.documentId,

@@ -52,8 +52,9 @@ class DocumentService {
     await proxy.addOwnDocument(documentId);
   }
 
-  visited = (documentId, userId) => {
-    proxy.setVisited(documentId, userId);
+  visited = async (documentId, userId) => {
+    await proxy.setVisited(documentId, userId);
+    await proxy.getVisited();
   }
 
   getVisited = async () => {
