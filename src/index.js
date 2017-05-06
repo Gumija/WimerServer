@@ -338,9 +338,7 @@ app.post('/documents/update/:id', (req, res) => {
 })
 
 app.get('/documents/versions/:documentId', (req, res) => {
-  console.log('----- VERSIONS ----')
   console.log('QUERY', mysql.format(documents.getVersions,[req.params.documentId]));
-  console.log('--- DOIN\' IT ---')
   dbIniter.query(mysql.format(documents.getVersions,[req.params.documentId]),
       (error, results, fields) => {
         if (error) {

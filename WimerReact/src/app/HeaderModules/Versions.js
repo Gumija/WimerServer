@@ -38,15 +38,18 @@ export default class Versions extends Component {
       <div>
         <IconButton onTouchTap={this.changeListState}><ShareIcon color={'white'} /></IconButton>
         {this.state.showList &&
-          <Paper style={{ position: 'absolute', maxHeight: 490, width: 300, right: 0, marginRight: 10, overflowY: 'scroll' }}>
-            <List>
-              {this.props.documentStore.versions.map((version) =>
-                <ListItem primaryText={version.name} secondaryText={version.title} 
-                  onTouchTap={() => this.props.history.push(`/document/${version.id}/${version.userId}`)}
-                />
-              )}
-            </List>
-          </Paper>
+          <div style={{ position: 'fixed', top: 0, bottom: 0, left: 0, right: 0 }}
+            onClick={() => this.changeListState()} >
+            <Paper style={{ position: 'absolute', maxHeight: 490, width: 300, right: 0, marginRight: 10, overflowY: 'scroll' }}>
+              <List>
+                {this.props.documentStore.versions.map((version) =>
+                  <ListItem primaryText={version.name} secondaryText={version.title}
+                    onTouchTap={() => this.props.history.push(`/document/${version.id}/${version.userId}`)}
+                  />
+                )}
+              </List>
+            </Paper>
+          </div>
         }
       </div>
       /*<IconButton onTouchTap={this.changeListState}><ShareIcon2 /></IconButton>
