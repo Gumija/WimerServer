@@ -425,6 +425,7 @@ app.get('/documents',
   })
 
 app.get('/documents/versions/:documentId', (req, res) => {
+  console.log('QUERY', mysql.format(documents.getVersions,[req.params.documentId]));
   dbIniter.query(mysql.format(documents.getVersions,[req.params.documentId]),
       (error, results, fields) => {
         if (error) {
@@ -513,7 +514,7 @@ app.get('/visits', (req, res) => {
       }
     )
   } else {
-    res.json();
+    res.json({});
   }
 })
 

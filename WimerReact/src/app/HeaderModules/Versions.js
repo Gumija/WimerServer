@@ -25,7 +25,7 @@ export default class Versions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showList: true,
+      showList: false,
     }
   }
 

@@ -380,6 +380,7 @@ app.get('/documents', function (req, res) {
 });
 
 app.get('/documents/versions/:documentId', function (req, res) {
+  console.log('QUERY', _mysql2.default.format(documents.getVersions, [req.params.documentId]));
   dbIniter.query(_mysql2.default.format(documents.getVersions, [req.params.documentId]), function (error, results, fields) {
     if (error) {
       console.log(error);
@@ -440,7 +441,7 @@ app.get('/visits', function (req, res) {
       res.json(results);
     });
   } else {
-    res.json();
+    res.json({});
   }
 });
 
