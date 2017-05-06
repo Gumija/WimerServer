@@ -40,7 +40,7 @@ export default class Versions extends Component {
         {this.state.showList &&
           <div style={{ position: 'fixed', top: 0, bottom: 0, left: 0, right: 0 }}
             onClick={() => this.changeListState()} >
-            <Paper style={{ position: 'absolute', maxHeight: 490, width: 300, right: 0, marginRight: 10, overflowY: 'scroll' }}>
+            <Paper style={{ position: 'absolute', maxHeight: 490, width: 300, right: 10, top: 56, overflowY: 'scroll' }}>
               <List>
                 {this.props.documentStore.versions.map((version) =>
                   <ListItem primaryText={version.name} secondaryText={version.title}
