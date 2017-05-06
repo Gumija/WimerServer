@@ -64,8 +64,8 @@ class DocumentService {
         // empty response
       } else {
         for (let recent of json) {
-          DocumentStore.addDocumentInfo({
-            documentId: recent.dcoument_id,
+          DocumentStore.addRecentDocument({
+            documentId: recent.document_id,
             userId: recent.document_user_id,
             date: recent.date,
             title: recent.title,
