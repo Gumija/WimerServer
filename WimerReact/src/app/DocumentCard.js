@@ -1,32 +1,19 @@
 import React, { Component } from 'react';
-import { Card, CardActions, CardTitle, CardText } from 'material-ui/Card';
+import { Card, CardActions, CardTitle } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
-import './DocumentCard.css';
 import { Link } from 'react-router-dom';
 
 export default class DocumentCard extends Component {
 
   render() {
     return (
-      <Card className="card">
+      <Card style={{margin: 5}}>
         <CardTitle
           title={this.props.document.title}
         />
-        <CardText>
-          {this.props.document.preview}
-        </CardText>
         <Divider />
-        <CardActions className="card-actions">
-          <FlatButton
-            icon={<FontIcon className="material-icons">share</FontIcon>}
-            onTouchTap={(e) => { e.stopPropagation(); alert('icon'); }}
-          />
-          <FlatButton
-            icon={<FontIcon className="material-icons">delete</FontIcon>}
-          />
+        <CardActions style={{display: 'flex', justifyContent: 'flex-end'}}>
           <Link to={`/document/${this.props.document.id}/${this.props.document.userId}`}>
             <RaisedButton>
               OPEN

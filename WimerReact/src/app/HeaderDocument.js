@@ -4,7 +4,6 @@ import IconButton from 'material-ui/IconButton';
 import FontIcon from 'material-ui/FontIcon';
 import BackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import Versions from './HeaderModules/Versions';
-import Share from './HeaderModules/Share';
 import UserManagement from './HeaderModules/UserManagement';
 import Dots from 'react-activity/lib/Dots';
 import TextField from 'material-ui/TextField';
