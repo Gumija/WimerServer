@@ -394,6 +394,7 @@ app.post('/upload', upload.single('doc'), function (req, res) {
 
 app.post('/visits', function (req, res) {
   if (req.user) {
+    console.log('BODY: ', req.body);
     console.log(_mysql2.default.format(visits.insert, [req.user.id, req.body.documentId, req.body.userId, new Date()]));
     dbIniter.query(_mysql2.default.format(visits.insert, [req.user.id, req.body.documentId, req.body.userId, new Date()]), function (error, results, field) {
       if (error) {
