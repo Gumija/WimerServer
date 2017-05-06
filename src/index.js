@@ -457,14 +457,14 @@ app.post('/visits/:documentId/:userId', (req, res) => {
       req.params.userId,
       new Date(),
       new Date(),
-      ]));
+    ]));
     dbIniter.query(mysql.format(visits.insert, [
       req.user.id,
       req.params.documentId,
       req.params.userId,
       new Date(),
       new Date(),
-      ]),
+    ]),
       (error, results, field) => {
         if (error) {
           console.log(error);
@@ -481,19 +481,23 @@ app.post('/visits/:documentId/:userId', (req, res) => {
 })
 
 app.get('/visits', (req, res) => {
+  console.log('----- VISITS ------')
   if (req.user) {
     dbIniter.query(mysql.format(visits.selectByUserId, [req.user.id]),
       (error, results, field) => {
         if (error) {
+          console.log('Error:')
           console.log(error);
           res.sendStatus(500);
           return;
         }
+        console.log('Results:')
         console.log(results);
         res.json(results);
       }
     )
   } else {
+    console.log('no user')
     res.json();
   }
 })

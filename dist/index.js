@@ -413,17 +413,21 @@ app.post('/visits/:documentId/:userId', function (req, res) {
 });
 
 app.get('/visits', function (req, res) {
+  console.log('----- VISITS ------');
   if (req.user) {
     dbIniter.query(_mysql2.default.format(visits.selectByUserId, [req.user.id]), function (error, results, field) {
       if (error) {
+        console.log('Error:');
         console.log(error);
         res.sendStatus(500);
         return;
       }
+      console.log('Results:');
       console.log(results);
       res.json(results);
     });
   } else {
+    console.log('no user');
     res.json();
   }
 });
