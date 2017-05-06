@@ -83,8 +83,16 @@ var DbInitializer = function DbInitializer() {
       `google_id` varchar(45) NOT NULL,\
       PRIMARY KEY (`id`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;", function () {
-          // this.connection.end();
-          console.log('Initiing finished!');
+          return _this.queryWithConnection("\
+      CREATE TABLE IF NOT EXISTS `visits` (\
+      `user_id` INT NOT NULL,\
+      `document_id` INT NOT NULL,\
+      `document_user_id` INT NOT NULL,\
+      `date` DATETIME NOT NULL\
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;", function () {
+            // this.connection.end();
+            console.log('Initiing finished!');
+          });
         });
       });
     });

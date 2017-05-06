@@ -97,6 +97,17 @@ var users = {
    WHERE id = ?'
 };
 
+var visits = {
+  insert: 'INSERT INTO visits \
+    VALUES (?, ?, ?, ?)',
+  selectByUserId: 'SELECT v.document_id, v.document_user_id, v.date , d.title \
+   FROM visits v\
+   JOIN documents d ON v.document_id = d.id \
+										AND v.document_user_id = d.user_id\
+   WHERE v.user_id = ? \
+   ORDER BY v.date DESC;'
+};
+
 var dbIniter = new _db2.default();
 dbIniter.initDB();
 
@@ -378,6 +389,38 @@ app.post('/upload', upload.single('doc'), function (req, res) {
     });
   } else {
     res.sendStatus(403); // 403 Forbidden
+  }
+});
+
+app.post('/visits', function (req, res) {
+  if (req.user) {
+    dbIniter.query(_mysql2.default.format(visits.insert, [req.user.id, req.body.document.id, req.body.user_id, new Date()]), function (error, results, field) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
+      }
+      console.log(results);
+      res.sendStatus(200);
+    });
+  } else {
+    res.sendStatus(403); // 403 Forbidden
+  }
+});
+
+app.get('/visits', function (req, res) {
+  if (req.user) {
+    dbIniter.query(_mysql2.default.format(visits.selectByUserId, [req.user.id]), function (error, results, field) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
+      }
+      console.log(results);
+      res.json(results);
+    });
+  } else {
+    res.json();
   }
 });
 
