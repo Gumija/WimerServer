@@ -1,5 +1,4 @@
 import DocumentStore from '../stores/DocumentStore';
-import UserStore from '../stores/UserStore';
 import proxy from '../proxy/DocumentProxy';
 
 class DocumentService {
@@ -58,19 +57,17 @@ class DocumentService {
   }
 
   getVisited = async () => {
-    if (UserStore.currentUser) {
-      let json = await proxy.getVisited();
-      if (Object.keys(json).length === 0 && json.constructor === Object) {
-        // empty response
-      } else {
-        for (let recent of json) {
-          DocumentStore.addRecentDocument({
-            documentId: recent.document_id,
-            userId: recent.document_user_id,
-            date: recent.date,
-            title: recent.title,
-          })
-        }
+    let json = await proxy.getVisited();
+    if (Object.keys(json).length === 0 && json.constructor === Object) {
+      // empty response
+    } else {
+      for (let recent of json) {
+        DocumentStore.addRecentDocument({
+          documentId: recent.document_id,
+          userId: recent.document_user_id,
+          date: recent.date,
+          title: recent.title,
+        })
       }
     }
   }
