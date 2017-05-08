@@ -190,6 +190,7 @@ app.get('/auth/google/callback', _passport2.default.authenticate('google', {
 }));
 
 app.get('/logout', function (req, res) {
+  req.logout();
   req.session.destroy(function (err) {
     //Inside a callback… bulletproof!
     res.sendStatus(200);
