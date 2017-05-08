@@ -116,7 +116,7 @@ export default class Home extends Component {
             </Paper>
           </div>
         }
-        <FloatingActionButton className="absolute-fab" onTouchTap={this.onUploadClick}>
+        <FloatingActionButton className="absolute-fab" onTouchTap={this.onUploadClick} secondary={true}>
           <FontIcon className="material-icons">file_upload</FontIcon>
         </FloatingActionButton>
         <Dialog
