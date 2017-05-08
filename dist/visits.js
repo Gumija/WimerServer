@@ -32,8 +32,9 @@ var visits = {
 
 var router = _express2.default.Router();
 
+// add visit
 router.post('/:documentId/:userId', function (req, res) {
-  if (req.user) {
+  if (req.user && req.user.id == req.params.userId) {
     console.log('PARAMS: ', req.params);
     console.log('BODY: ', req.body);
     console.log(_mysql2.default.format(visits.insert, [req.user.id, req.params.documentId, req.params.userId, new Date(), new Date()]));
@@ -51,6 +52,7 @@ router.post('/:documentId/:userId', function (req, res) {
   }
 });
 
+// get visits by user
 router.get('/', function (req, res) {
   if (req.user) {
     _db2.default.query(_mysql2.default.format(visits.selectByUserId, [req.user.id]), function (error, results, field) {

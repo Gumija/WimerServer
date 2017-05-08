@@ -19,8 +19,9 @@ let visits = {
 
 let router = express.Router();
 
+// add visit
 router.post('/:documentId/:userId', (req, res) => {
-  if (req.user) {
+  if (req.user && req.user.id == req.params.userId) {
     console.log('PARAMS: ', req.params)
     console.log('BODY: ', req.body)
     console.log(mysql.format(visits.insert, [
@@ -52,6 +53,7 @@ router.post('/:documentId/:userId', (req, res) => {
   }
 })
 
+// get visits by user
 router.get('/', (req, res) => {
   if (req.user) {
     dbIniter.query(mysql.format(visits.selectByUserId, [req.user.id]),

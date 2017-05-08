@@ -1,5 +1,4 @@
 
-
 import express from 'express';
 import dbIniter from './db/db';
 import mysql from 'mysql';
@@ -38,6 +37,7 @@ let router = express.Router();
 
 let upload = multer({ dest: 'uploads/' });
 
+// download file
 router.get('/download/:id', (req, res) => {
   console.log(mysql.format(documents.selectByDocumentId, [req.params.id]));
   dbIniter.query(mysql.format(documents.selectByDocumentId, [req.params.id]),
@@ -53,6 +53,7 @@ router.get('/download/:id', (req, res) => {
   )
 })
 
+// update title
 router.post('/update/:id', (req, res) => {
   if (req.user) {
     dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id, req.user.id]),
@@ -71,6 +72,8 @@ router.post('/update/:id', (req, res) => {
   }
 })
 
+
+// get versions
 router.get('/versions/:documentId', (req, res) => {
   console.log('QUERY', mysql.format(documents.getVersions, [req.params.documentId]));
   dbIniter.query(mysql.format(documents.getVersions, [req.params.documentId]),
@@ -86,6 +89,7 @@ router.get('/versions/:documentId', (req, res) => {
   )
 })
 
+// get document information
 router.get('/:documentId/:userId', (req, res) => {
   dbIniter.query(mysql.format(documents.selectById,
     [
@@ -104,6 +108,7 @@ router.get('/:documentId/:userId', (req, res) => {
   )
 })
 
+// upload document
 router.post('/upload', upload.single('doc'), (req, res) => {
   if (req.user) {
     let file = req.file;
@@ -132,6 +137,7 @@ router.post('/upload', upload.single('doc'), (req, res) => {
   }
 })
 
+// save document information
 router.post('/:documentId', (req, res) => {
   if (req.user) {
     console.log('QUERY', mysql.format(documents.selectByDocumentId, [req.params.documentId]));

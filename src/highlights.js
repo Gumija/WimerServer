@@ -21,7 +21,7 @@ let highlights = {
 
 let router = express.Router();
 
-
+// get highlights by document and user
 router.get('/:documentId/:userId', (req, res) => {
   dbIniter.query(mysql.format(highlights.selectByDocumentAndUser,
     [
@@ -41,6 +41,7 @@ router.get('/:documentId/:userId', (req, res) => {
   )
 })
 
+// delete highlight
 router.delete('/', (req, res) => {
   if (req.body.userId == req.user.id) {
     dbIniter.query(mysql.format(highlights.delete,
@@ -65,6 +66,7 @@ router.delete('/', (req, res) => {
   }
 })
 
+// add highlights
 router.post('/', (req, res) => {
   if (req.body.userId == req.user.id) {
 

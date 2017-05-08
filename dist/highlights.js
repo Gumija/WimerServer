@@ -33,6 +33,7 @@ var highlights = {
 
 var router = _express2.default.Router();
 
+// get highlights by document and user
 router.get('/:documentId/:userId', function (req, res) {
   _db2.default.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
     if (error) {
@@ -45,6 +46,7 @@ router.get('/:documentId/:userId', function (req, res) {
   });
 });
 
+// delete highlight
 router.delete('/', function (req, res) {
   if (req.body.userId == req.user.id) {
     _db2.default.query(_mysql2.default.format(highlights.delete, [req.body.id, req.body.documentId, req.body.userId]), function (error, results, fields) {
@@ -61,6 +63,7 @@ router.delete('/', function (req, res) {
   }
 });
 
+// add highlights
 router.post('/', function (req, res) {
   if (req.body.userId == req.user.id) {
 

@@ -49,6 +49,7 @@ var router = _express2.default.Router();
 
 var upload = (0, _multer2.default)({ dest: 'uploads/' });
 
+// download file
 router.get('/download/:id', function (req, res) {
   console.log(_mysql2.default.format(documents.selectByDocumentId, [req.params.id]));
   _db2.default.query(_mysql2.default.format(documents.selectByDocumentId, [req.params.id]), function (error, results, fields) {
@@ -62,6 +63,7 @@ router.get('/download/:id', function (req, res) {
   });
 });
 
+// update title
 router.post('/update/:id', function (req, res) {
   if (req.user) {
     _db2.default.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id, req.user.id]), function (error, results, fields) {
@@ -78,6 +80,7 @@ router.post('/update/:id', function (req, res) {
   }
 });
 
+// get versions
 router.get('/versions/:documentId', function (req, res) {
   console.log('QUERY', _mysql2.default.format(documents.getVersions, [req.params.documentId]));
   _db2.default.query(_mysql2.default.format(documents.getVersions, [req.params.documentId]), function (error, results, fields) {
@@ -91,6 +94,7 @@ router.get('/versions/:documentId', function (req, res) {
   });
 });
 
+// get document information
 router.get('/:documentId/:userId', function (req, res) {
   _db2.default.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.documentId, 10), parseInt(req.params.userId, 10)]), function (error, results, fields) {
     if (error) {
@@ -103,6 +107,7 @@ router.get('/:documentId/:userId', function (req, res) {
   });
 });
 
+// upload document
 router.post('/upload', upload.single('doc'), function (req, res) {
   if (req.user) {
     var file = req.file;
@@ -121,6 +126,7 @@ router.post('/upload', upload.single('doc'), function (req, res) {
   }
 });
 
+// save document information
 router.post('/:documentId', function (req, res) {
   if (req.user) {
     console.log('QUERY', _mysql2.default.format(documents.selectByDocumentId, [req.params.documentId]));
