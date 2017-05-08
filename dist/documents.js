@@ -103,6 +103,24 @@ router.get('/:documentId/:userId', function (req, res) {
   });
 });
 
+router.post('/upload', upload.single('doc'), function (req, res) {
+  if (req.user) {
+    var file = req.file;
+    // save document info to db
+    _db2.default.query(_mysql2.default.format(documents.insert, [0, file.originalname, file.path, file.mimetype, file.encoding, req.user.id]), function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+        return;
+      }
+      console.log(results);
+      res.json({ id: results.insertId });
+    });
+  } else {
+    res.sendStatus(403); // 403 Forbidden
+  }
+});
+
 router.post('/:documentId', function (req, res) {
   if (req.user) {
     console.log('QUERY', _mysql2.default.format(documents.selectByDocumentId, [req.params.documentId]));
@@ -155,24 +173,6 @@ router.get('/', function (req, res) {
     });
   } else {
     res.json({});
-  }
-});
-
-router.post('/upload', upload.single('doc'), function (req, res) {
-  if (req.user) {
-    var file = req.file;
-    // save document info to db
-    _db2.default.query(_mysql2.default.format(documents.insert, [0, file.originalname, file.path, file.mimetype, file.encoding, req.user.id]), function (error, results, fields) {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
-      }
-      console.log(results);
-      res.json({ id: results.insertId });
-    });
-  } else {
-    res.sendStatus(403); // 403 Forbidden
   }
 });
 

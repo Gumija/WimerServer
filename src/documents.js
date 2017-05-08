@@ -104,6 +104,34 @@ router.get('/:documentId/:userId', (req, res) => {
   )
 })
 
+router.post('/upload', upload.single('doc'), (req, res) => {
+  if (req.user) {
+    let file = req.file;
+    // save document info to db
+    dbIniter.query(mysql.format(documents.insert,
+      [
+        0,
+        file.originalname,
+        file.path,
+        file.mimetype,
+        file.encoding,
+        req.user.id,
+      ]),
+      (error, results, fields) => {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+          return;
+        }
+        console.log(results);
+        res.json({ id: results.insertId });
+      }
+    )
+  } else {
+    res.sendStatus(403); // 403 Forbidden
+  }
+})
+
 router.post('/:documentId', (req, res) => {
   if (req.user) {
     console.log('QUERY', mysql.format(documents.selectByDocumentId, [req.params.documentId]));
@@ -172,33 +200,5 @@ router.get('/',
       res.json({});
     }
   })
-
-router.post('/upload', upload.single('doc'), (req, res) => {
-  if (req.user) {
-    let file = req.file;
-    // save document info to db
-    dbIniter.query(mysql.format(documents.insert,
-      [
-        0,
-        file.originalname,
-        file.path,
-        file.mimetype,
-        file.encoding,
-        req.user.id,
-      ]),
-      (error, results, fields) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        res.json({ id: results.insertId });
-      }
-    )
-  } else {
-    res.sendStatus(403); // 403 Forbidden
-  }
-})
 
 export default router
