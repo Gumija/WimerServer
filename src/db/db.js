@@ -1,5 +1,5 @@
 import mysql from 'mysql';
-export default class DbInitializer {
+class DbInitializer {
 
   constructor() {
     this.connection = null;
@@ -101,6 +101,7 @@ export default class DbInitializer {
       // this.connection.end();
     });
   }
-
-
 }
+
+var dbIniter = new DbInitializer();
+export default dbIniter;

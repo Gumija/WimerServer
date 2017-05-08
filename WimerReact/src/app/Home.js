@@ -35,7 +35,7 @@ export default class Home extends Component {
       let data = new FormData()
       data.append('doc', acceptedFiles[0])
 
-      let req = new Request('/upload', {
+      let req = new Request('/documents/upload', {
         method: 'POST',
         body: data
       })

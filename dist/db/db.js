@@ -117,5 +117,6 @@ var DbInitializer = function DbInitializer() {
   this.connection = null;
 };
 
-exports.default = DbInitializer;
+var dbIniter = new DbInitializer();
+exports.default = dbIniter;
 //# sourceMappingURL=db.js.map

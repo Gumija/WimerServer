@@ -4,61 +4,18 @@ import express from 'express';
 import session from 'express-session';
 import morgan from 'morgan';
 import mysql from 'mysql';
-import multer from 'multer';
 import passport from 'passport';
 import GoogleAuth from 'passport-google-oauth';
 import path from 'path';
 import DbIniter from './db/db';
+import visitsHandler from './visits';
+import documentsHandler from './documents';
+import highlightHandler from './highlights';
 
 // API Access link for creating client ID and secret:
 // https://code.google.com/apis/console/
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
   , GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-
-let documents = {
-  insert:
-  'INSERT INTO documents \
-     VALUES (?, ?, ?, ?, ?, ?)',
-  selectAllByUser:
-  'SELECT * \
-   FROM documents \
-   WHERE user_id = ?',
-  selectByDocumentId:
-  'SELECT * \
-    FROM documents \
-    WHERE id = ?',
-  selectById:
-  'SELECT * \
-     FROM documents \
-     WHERE id = ?\
-     AND user_id = ?',
-  update:
-  'UPDATE documents \
-     SET title = ? \
-     WHERE id = ? \
-     AND user_id = ?',
-  getVersions:
-  'SELECT d.id, d.user_id, d.title, u.name\
-   FROM documents d\
-   JOIN users u ON d.user_id = u.id\
-   WHERE d.id = ?'
-}
-
-let highlights = {
-  insert:
-  'INSERT INTO highlights \
-     VALUES (?, ?, ?, ?, ?, ?, ?)',
-  delete:
-  'DELETE FROM highlights \
-     WHERE id = ? \
-     AND document_id = ? \
-     AND user_id = ?',
-  selectByDocumentAndUser:
-  'SELECT * \
-     FROM highlights \
-     WHERE document_id = ? \
-     AND user_id = ?',
-}
 
 let users = {
   selectByGoogleId:
@@ -78,21 +35,7 @@ let users = {
    WHERE id = ?'
 }
 
-let visits = {
-  insert:
-  'INSERT INTO visits \
-   VALUES (?, ?, ?, ?) \
-   ON DUPLICATE KEY UPDATE date = ?',
-  selectByUserId:
-  'SELECT v.document_id, v.document_user_id, v.date , d.title \
-   FROM visits v\
-   JOIN documents d ON v.document_id = d.id \
-										AND v.document_user_id = d.user_id\
-   WHERE v.user_id = ? \
-   ORDER BY v.date DESC;'
-}
-
-let dbIniter = new DbIniter();
+let dbIniter = DbIniter;
 dbIniter.initDB();
 
 // Passport session setup.
@@ -178,7 +121,6 @@ passport.use(new GoogleAuth.OAuth2Strategy({
 
 
 let app = express();
-let upload = multer({ dest: 'uploads/' });
 
 let buildFolderPath = process.env.DATABASE_URL ? path.resolve(__dirname, './', 'WimerReact/build')
   : path.resolve(__dirname, '..', 'WimerReact/build')
@@ -231,293 +173,9 @@ app.get('/logout', (req, res) => {
   });
 })
 
-app.get('/highlight/:documentId/:userId', (req, res) => {
-  dbIniter.query(mysql.format(highlights.selectByDocumentAndUser,
-    [
-      req.params.documentId,
-      req.params.userId,
-    ]
-  ),
-    (error, results, fields) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
-      }
-      console.log(results);
-      res.json(results);
-    }
-  )
-})
-
-app.delete('/highlight', (req, res) => {
-  if (req.body.userId == req.user.id) {
-    dbIniter.query(mysql.format(highlights.delete,
-      [
-        req.body.id,
-        req.body.documentId,
-        req.body.userId,
-      ]
-    ),
-      (error, results, fields) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(fields);
-        res.sendStatus(200);
-      }
-    )
-  } else {
-    res.sendStatus(403); // 403 Forbidden
-  }
-})
-
-app.post('/highlight', (req, res) => {
-  if (req.body.userId == req.user.id) {
-
-    // save highlight from body
-    dbIniter.query(mysql.format(highlights.insert,
-      [
-        req.body.id,
-        req.body.start,
-        req.body.end,
-        req.body.class,
-        req.body.container,
-        req.body.documentId,
-        req.body.userId,
-      ]
-    ),
-      (error, results, fields) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        res.sendStatus(200);
-      }
-    )
-  } else {
-    res.sendStatus(403); // 403 Forbidden
-  }
-})
-
-app.get('/documents/download/:id', (req, res) => {
-  console.log(mysql.format(documents.selectByDocumentId, [req.params.id]));
-  dbIniter.query(mysql.format(documents.selectByDocumentId, [req.params.id]),
-    (error, results, fields) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
-      }
-      console.log(results);
-      res.download(results[0].path);
-    }
-  )
-})
-
-app.post('/documents/update/:id', (req, res) => {
-  if (req.user) {
-    dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id, req.user.id]),
-      (error, results, fields) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        res.json(results);
-      }
-    )
-  } else {
-    res.json([]);
-  }
-})
-
-app.get('/documents/versions/:documentId', (req, res) => {
-  console.log('QUERY', mysql.format(documents.getVersions,[req.params.documentId]));
-  dbIniter.query(mysql.format(documents.getVersions,[req.params.documentId]),
-      (error, results, fields) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        res.json(results);
-      }
-    )
-})
-
-app.get('/documents/:documentId/:userId', (req, res) => {
-  dbIniter.query(mysql.format(documents.selectById,
-    [
-      parseInt(req.params.documentId, 10),
-      parseInt(req.params.userId, 10)
-    ]),
-    (error, results, fields) => {
-      if (error) {
-        console.log(error);
-        res.sendStatus(500);
-        return;
-      }
-      console.log(results);
-      res.json(results);
-    }
-  )
-})
-
-app.post('/documents/:documentId', (req, res) => {
-  if (req.user) {
-    console.log('QUERY', mysql.format(documents.selectByDocumentId, [req.params.documentId]));
-    dbIniter.query(mysql.format(documents.selectByDocumentId, [req.params.documentId]),
-      (error, results, fields) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        if (results.length) {
-          dbIniter.query(mysql.format(documents.insert,
-            [
-              results[0].id,
-              results[0].title,
-              results[0].path,
-              results[0].type,
-              results[0].encoding,
-              req.user.id,
-            ]),
-            (error, results, fields) => {
-              if (error) {
-                console.log(error);
-                res.sendStatus(500);
-                return;
-              }
-              console.log(results);
-              res.json({ id: results.insertId });
-            }
-          )
-        } else {
-          res.sendStatus(500);
-        }
-      })
-  } else {
-    res.sendStatus(403) // 403 Forbidden
-  }
-})
-
-app.get('/documents',
-  (req, res) => {
-    console.log('-------- DOCUMENTS --------');
-    console.log('Session', req.session);
-    console.log('SessionIdName: ', req.session.sessonIdName)
-    console.log('SessionId: ', req.session.id)
-    console.log('SessionId: ', req.sessionID)
-    console.log('SessionCookie: ', req.session.cookie)
-    console.log('Cookies: ', req.cookies)
-    console.log('Signed Cookies: ', req.signedCookies)
-    console.log('Auth: ', req.isAuthenticated());
-    console.log('User: ', req.user);
-    if (req.user) {
-      dbIniter.query(mysql.format(documents.selectAllByUser, [req.user.id]),
-        (error, results, field) => {
-          if (error) {
-            console.log(error);
-            res.sendStatus(500);
-            return;
-          }
-          console.log(results);
-          res.json(results);
-        }
-      )
-    } else {
-      res.json({});
-    }
-  })
-
-
-app.post('/upload', upload.single('doc'), (req, res) => {
-  if (req.user) {
-    let file = req.file;
-    // save document info to db
-    dbIniter.query(mysql.format(documents.insert,
-      [
-        0,
-        file.originalname,
-        file.path,
-        file.mimetype,
-        file.encoding,
-        req.user.id,
-      ]),
-      (error, results, fields) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        res.json({ id: results.insertId });
-      }
-    )
-  } else {
-    res.sendStatus(403); // 403 Forbidden
-  }
-})
-
-app.post('/visits/:documentId/:userId', (req, res) => {
-  if (req.user) {
-    console.log('PARAMS: ', req.params)
-    console.log('BODY: ', req.body)
-    console.log(mysql.format(visits.insert, [
-      req.user.id,
-      req.params.documentId,
-      req.params.userId,
-      new Date(),
-      new Date(),
-    ]));
-    dbIniter.query(mysql.format(visits.insert, [
-      req.user.id,
-      req.params.documentId,
-      req.params.userId,
-      new Date(),
-      new Date(),
-    ]),
-      (error, results, field) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        res.sendStatus(200);
-      }
-    )
-  } else {
-    res.sendStatus(403); // 403 Forbidden
-  }
-})
-
-app.get('/visits', (req, res) => {
-  if (req.user) {
-    dbIniter.query(mysql.format(visits.selectByUserId, [req.user.id]),
-      (error, results, field) => {
-        if (error) {
-          console.log(error);
-          res.sendStatus(500);
-          return;
-        }
-        console.log(results);
-        res.json(results);
-      }
-    )
-  } else {
-    res.json({});
-  }
-})
+app.use('/highlight', highlightHandler);
+app.use('/documents', documentsHandler);
+app.use('/visits', visitsHandler);
 
 app.get('/user', (req, res) => {
   if (req.user) {
