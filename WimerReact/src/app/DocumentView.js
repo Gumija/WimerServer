@@ -181,7 +181,11 @@ export default class DocumentView extends Component {
       <div className="document-view-container">
         {this.props.loading ?
           <div>
-            <div id="presenter" ref={(div) => this.presenter = div}>
+            <div id="presenter" ref={(div) => this.presenter = div}
+              style={{
+                borderLeftStyle: 'solid', borderLeftColor: 'black', 
+                borderRightStyle: 'solid', borderRightColor: 'black', 
+                marginLeft: 15, marginRight: 15}}>
               <ReactMarkdown source={this.props.file.file} />
             </div>
             {!this.props.user &&
