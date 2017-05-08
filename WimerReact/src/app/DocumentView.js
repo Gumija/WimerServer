@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './DocumentView.css';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FontIcon from 'material-ui/FontIcon';
 import SvgIcon from 'material-ui/SvgIcon';
@@ -178,14 +177,15 @@ export default class DocumentView extends Component {
   render() {
     return (
       /* Used to center stuff. This will be Navigated */
-      <div className="document-view-container">
+      <div style={{ marginLeft: '10%', marginRight: '10%' }}>
         {this.props.loading ?
           <div>
             <div id="presenter" ref={(div) => this.presenter = div}
               style={{
-                borderLeftStyle: 'solid', borderLeftColor: 'black',  borderLeftWidth: 1,
+                borderLeftStyle: 'solid', borderLeftColor: 'black', borderLeftWidth: 1,
                 borderRightStyle: 'solid', borderRightColor: 'black', borderRightWidth: 1,
-                paddingLeft: 15, paddingRight: 15}}>
+                paddingLeft: 15, paddingRight: 15
+              }}>
               <ReactMarkdown source={this.props.file.file} />
             </div>
             {!this.props.user &&
@@ -252,9 +252,9 @@ export default class DocumentView extends Component {
                   </FloatingActionButton>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'flex-end', paddingBottom: 8, paddingRight: 8 }}>
-                  <FloatingActionButton className={'fab-add'}
+                  <FloatingActionButton
                     backgroundColor={'rgba(255,255,255,1)'}
-                    style={{ alignItems: 'center', justifyContect: 'center' }}
+                    style={{ alignItems: 'center', justifyContect: 'center', marginBottom: 8 }}
                     onTouchTap={() => this.onShowColorColorPicker()}
                     mini={true}>
                     <FontIcon className="material-icons" style={{ color: 'grey' }}>add</FontIcon>
@@ -279,7 +279,12 @@ export default class DocumentView extends Component {
           </div>
 
           :
-          <div className="loading_indicator">
+          <div style={{
+            alignSelf: 'center',
+            justifyContent: 'center',
+            display: 'flex',
+            marginTop: 60,
+          }}>
             <Digital size={40} />
           </div>
         }

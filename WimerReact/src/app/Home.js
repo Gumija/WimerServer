@@ -7,7 +7,6 @@ import Paper from 'material-ui/Paper';
 import Dropzone from 'react-dropzone';
 import DocumentService from './services/DocumentService';
 import UserManagement from './HeaderModules/UserManagement';
-import './Home.css';
 
 import { inject, observer } from 'mobx-react';
 
@@ -84,8 +83,13 @@ export default class Home extends Component {
   render() {
     return (
       /* Used to center stuff. This will be Navigated */
-      <div className="home-container">
-        <p className="section-header">Recent</p>
+      <div style={{ marginLeft: '10%', marginRight: '10%' }}>
+        <p style={{
+          fontFamily: 'Roboto, sans-serif',
+          borderBottom: '1px solid black',
+          paddingBottom: 6,
+          fontSize: 26,
+        }}>Recent</p>
         <div className="card-container">
           {this.props.documentStore.recentDocs.map((doc) =>
             <DocumentCard document={doc} key={doc.documentId + '_' + doc.userId} />
@@ -116,7 +120,12 @@ export default class Home extends Component {
             </Paper>
           </div>
         }
-        <FloatingActionButton className="absolute-fab" onTouchTap={this.onUploadClick} secondary={true}>
+        <FloatingActionButton style={{
+          position: 'fixed',
+          margin: 12,
+          right: 0,
+          bottom: 0,
+        }} onTouchTap={this.onUploadClick} secondary={true}>
           <FontIcon className="material-icons">file_upload</FontIcon>
         </FloatingActionButton>
         <Dialog

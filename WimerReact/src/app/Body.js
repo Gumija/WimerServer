@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './Body.css';
 import {
   Route
 } from 'react-router-dom';
@@ -17,7 +16,7 @@ export default class Body extends Component {
   render() {
     return (
       /* Used to center stuff. This will be Navigated */
-        <div className="body">
+        <div style={{paddingTop: 64}}>
           <Route exact path="/" component={Home} />
           <Route path="/document/:documentId/:userId" component={DocumentViewContainer} />
         </div >
