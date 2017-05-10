@@ -84,7 +84,7 @@ export default class Header extends Component {
           : "NULL"}
         iconElementLeft={
           <Link to="/">
-            <IconButton onTouchTap={() => { }/*this.props.history.goBack()*/}><BackIcon /></IconButton>
+            <IconButton onTouchTap={() => { }/*this.props.history.goBack()*/}><BackIcon style={{ color: 'white' }} /></IconButton>
           </Link>
         }
         iconElementRight={
