@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import FontIcon from 'material-ui/FontIcon';
-import BackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import Versions from './HeaderModules/Versions';
 import UserManagement from './HeaderModules/UserManagement';
 import Dots from 'react-activity/lib/Dots';
@@ -84,7 +83,9 @@ export default class Header extends Component {
           : "NULL"}
         iconElementLeft={
           <Link to="/">
-            <IconButton onTouchTap={() => { }/*this.props.history.goBack()*/}><BackIcon style={{ color: 'white' }} /></IconButton>
+            <IconButton onTouchTap={() => { }/*this.props.history.goBack()*/}>
+              <FontIcon className="material-icons" color={'white'}>arrow_back</FontIcon>
+            </IconButton>
           </Link>
         }
         iconElementRight={
