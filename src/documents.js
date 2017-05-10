@@ -3,6 +3,7 @@ import express from 'express';
 import dbIniter from './db/db';
 import mysql from 'mysql';
 import multer from 'multer';
+import hasher from './hasher';
 
 let documents = {
   insert:
@@ -39,8 +40,10 @@ let upload = multer({ dest: 'uploads/' });
 
 // download file
 router.get('/download/:id', (req, res) => {
-  console.log(mysql.format(documents.selectByDocumentId, [req.params.id]));
-  dbIniter.query(mysql.format(documents.selectByDocumentId, [req.params.id]),
+  let id = hasher.decode(req.params.id);
+
+  console.log(mysql.format(documents.selectByDocumentId, [id]));
+  dbIniter.query(mysql.format(documents.selectByDocumentId, [id]),
     (error, results, fields) => {
       if (error) {
         console.log(error);
@@ -56,7 +59,8 @@ router.get('/download/:id', (req, res) => {
 // update title
 router.post('/update/:id', (req, res) => {
   if (req.user) {
-    dbIniter.query(mysql.format(documents.update, [req.body.title, req.params.id, req.user.id]),
+    let id = hasher.decode(req.params.id);
+    dbIniter.query(mysql.format(documents.update, [req.body.title, id, req.user.id]),
       (error, results, fields) => {
         if (error) {
           console.log(error);
@@ -64,7 +68,7 @@ router.post('/update/:id', (req, res) => {
           return;
         }
         console.log(results);
-        res.json(results);
+        res.sendStatus(200);
       }
     )
   } else {
@@ -75,8 +79,9 @@ router.post('/update/:id', (req, res) => {
 
 // get versions
 router.get('/versions/:documentId', (req, res) => {
-  console.log('QUERY', mysql.format(documents.getVersions, [req.params.documentId]));
-  dbIniter.query(mysql.format(documents.getVersions, [req.params.documentId]),
+  let documentId = hasher.decode(req.params.documentId);
+  console.log('QUERY', mysql.format(documents.getVersions, [documentId]));
+  dbIniter.query(mysql.format(documents.getVersions, [documentId]),
     (error, results, fields) => {
       if (error) {
         console.log(error);
@@ -84,6 +89,10 @@ router.get('/versions/:documentId', (req, res) => {
         return;
       }
       console.log(results);
+      for (let result of results) {
+        result.id = hasher.encode(result.id);
+        result.user_id = hasher.encode(result.user_id);
+      }
       res.json(results);
     }
   )
@@ -91,10 +100,12 @@ router.get('/versions/:documentId', (req, res) => {
 
 // get document information
 router.get('/:documentId/:userId', (req, res) => {
+  let documentId = hasher.decode(req.params.documentId);
+  let userId = hasher.decode(req.params.userId);
   dbIniter.query(mysql.format(documents.selectById,
     [
-      parseInt(req.params.documentId, 10),
-      parseInt(req.params.userId, 10)
+      parseInt(documentId, 10),
+      parseInt(userId, 10)
     ]),
     (error, results, fields) => {
       if (error) {
@@ -103,6 +114,10 @@ router.get('/:documentId/:userId', (req, res) => {
         return;
       }
       console.log(results);
+      for (let result of results) {
+        result.id = hasher.encode(result.id);
+        result.user_id = hasher.encode(result.user_id);
+      }
       res.json(results);
     }
   )
@@ -129,7 +144,10 @@ router.post('/upload', upload.single('doc'), (req, res) => {
           return;
         }
         console.log(results);
-        res.json({ id: results.insertId });
+        res.json({
+          id: hasher.encode(results.insertId),
+          userId: hasher.encode(req.user.id),
+        });
       }
     )
   } else {
@@ -140,8 +158,9 @@ router.post('/upload', upload.single('doc'), (req, res) => {
 // save document information
 router.post('/:documentId', (req, res) => {
   if (req.user) {
-    console.log('QUERY', mysql.format(documents.selectByDocumentId, [req.params.documentId]));
-    dbIniter.query(mysql.format(documents.selectByDocumentId, [req.params.documentId]),
+    let documentId = hasher.decode(req.params.documentId);
+    console.log('QUERY', mysql.format(documents.selectByDocumentId, [documentId]));
+    dbIniter.query(mysql.format(documents.selectByDocumentId, [documentId]),
       (error, results, fields) => {
         if (error) {
           console.log(error);
@@ -166,7 +185,10 @@ router.post('/:documentId', (req, res) => {
                 return;
               }
               console.log(results);
-              res.json({ id: results.insertId });
+              res.json({
+                id: hasher.encode(results.insertId),
+                userId: hasher.encode(req.user.id),
+              });
             }
           )
         } else {

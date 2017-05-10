@@ -9,7 +9,7 @@ class DocumentService {
     } else {
       for (let docinfo of documentJson) {
         DocumentStore.addDocumentInfo({
-          id: parseInt(docinfo.id, 10),
+          id: docinfo.id,
           title: docinfo.title,
           preview: "",
           last_opened: new Date(),
@@ -27,7 +27,7 @@ class DocumentService {
     } else {
       for (let docinfo of documentJson) {
         DocumentStore.addDocumentInfo({
-          id: parseInt(docinfo.id, 10),
+          id: docinfo.id,
           title: docinfo.title,
           preview: "",
           last_opened: new Date(),

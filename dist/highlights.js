@@ -16,6 +16,10 @@ var _mysql = require('mysql');
 
 var _mysql2 = _interopRequireDefault(_mysql);
 
+var _hasher = require('./hasher');
+
+var _hasher2 = _interopRequireDefault(_hasher);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var highlights = {
@@ -35,21 +39,51 @@ var router = _express2.default.Router();
 
 // get highlights by document and user
 router.get('/:documentId/:userId', function (req, res) {
-  _db2.default.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [req.params.documentId, req.params.userId]), function (error, results, fields) {
+  var userId = _hasher2.default.decode(req.params.userId);
+  var documentId = _hasher2.default.decode(req.params.documentId);
+  _db2.default.query(_mysql2.default.format(highlights.selectByDocumentAndUser, [documentId, userId]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
       return;
     }
     console.log(results);
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = results[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var result = _step.value;
+
+        result.document_id = _hasher2.default.encode(result.document_id);
+        result.user_id = _hasher2.default.encode(result.user_id);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
     res.json(results);
   });
 });
 
 // delete highlight
 router.delete('/', function (req, res) {
-  if (req.body.userId == req.user.id) {
-    _db2.default.query(_mysql2.default.format(highlights.delete, [req.body.id, req.body.documentId, req.body.userId]), function (error, results, fields) {
+  var userId = _hasher2.default.decode(req.body.userId);
+  var documentId = _hasher2.default.decode(req.body.documentId);
+  if (userId == req.user.id) {
+    _db2.default.query(_mysql2.default.format(highlights.delete, [req.body.id, documentId, userId]), function (error, results, fields) {
       if (error) {
         console.log(error);
         res.sendStatus(500);
@@ -65,10 +99,12 @@ router.delete('/', function (req, res) {
 
 // add highlights
 router.post('/', function (req, res) {
-  if (req.body.userId == req.user.id) {
+  var userId = _hasher2.default.decode(req.body.userId);
+  var documentId = _hasher2.default.decode(req.body.documentId);
+  if (userId == req.user.id) {
 
     // save highlight from body
-    _db2.default.query(_mysql2.default.format(highlights.insert, [req.body.id, req.body.start, req.body.end, req.body.class, req.body.container, req.body.documentId, req.body.userId]), function (error, results, fields) {
+    _db2.default.query(_mysql2.default.format(highlights.insert, [req.body.id, req.body.start, req.body.end, req.body.class, req.body.container, documentId, userId]), function (error, results, fields) {
       if (error) {
         console.log(error);
         res.sendStatus(500);

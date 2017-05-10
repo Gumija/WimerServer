@@ -2,6 +2,7 @@
 import express from 'express';
 import dbIniter from './db/db';
 import mysql from 'mysql';
+import hasher from './hasher';
 
 let highlights = {
   insert:
@@ -23,10 +24,12 @@ let router = express.Router();
 
 // get highlights by document and user
 router.get('/:documentId/:userId', (req, res) => {
+  let userId = hasher.decode(req.params.userId);
+  let documentId = hasher.decode(req.params.documentId);
   dbIniter.query(mysql.format(highlights.selectByDocumentAndUser,
     [
-      req.params.documentId,
-      req.params.userId,
+      documentId,
+      userId,
     ]
   ),
     (error, results, fields) => {
@@ -36,6 +39,10 @@ router.get('/:documentId/:userId', (req, res) => {
         return;
       }
       console.log(results);
+      for (let result of results) {
+        result.document_id = hasher.encode(result.document_id);
+        result.user_id = hasher.encode(result.user_id);
+      }
       res.json(results);
     }
   )
@@ -43,12 +50,14 @@ router.get('/:documentId/:userId', (req, res) => {
 
 // delete highlight
 router.delete('/', (req, res) => {
-  if (req.body.userId == req.user.id) {
+  let userId = hasher.decode(req.body.userId);
+  let documentId = hasher.decode(req.body.documentId);
+  if (userId == req.user.id) {
     dbIniter.query(mysql.format(highlights.delete,
       [
         req.body.id,
-        req.body.documentId,
-        req.body.userId,
+        documentId,
+        userId,
       ]
     ),
       (error, results, fields) => {
@@ -68,7 +77,9 @@ router.delete('/', (req, res) => {
 
 // add highlights
 router.post('/', (req, res) => {
-  if (req.body.userId == req.user.id) {
+  let userId = hasher.decode(req.body.userId);
+  let documentId = hasher.decode(req.body.documentId);
+  if (userId == req.user.id) {
 
     // save highlight from body
     dbIniter.query(mysql.format(highlights.insert,
@@ -78,8 +89,8 @@ router.post('/', (req, res) => {
         req.body.end,
         req.body.class,
         req.body.container,
-        req.body.documentId,
-        req.body.userId,
+        documentId,
+        userId,
       ]
     ),
       (error, results, fields) => {

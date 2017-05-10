@@ -16,18 +16,18 @@ export default class DocumentViewContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let documentId = parseInt(this.props.match.params.documentId, 10);
-    let userId = parseInt(this.props.match.params.userId, 10);
-    let nextdocumentId = parseInt(nextProps.match.params.documentId, 10);
-    let nextUserId = parseInt(nextProps.match.params.userId, 10);
+    let documentId = this.props.match.params.documentId;
+    let userId = this.props.match.params.userId;
+    let nextdocumentId = nextProps.match.params.documentId;
+    let nextUserId = nextProps.match.params.userId;
     if (documentId !== nextdocumentId || userId !== nextUserId) {
       this.init(nextProps);
     }
   }
 
   init = async (props) => {
-    let documentId = parseInt(props.match.params.documentId, 10);
-    let userId = parseInt(props.match.params.userId, 10);
+    let documentId = props.match.params.documentId;
+    let userId = props.match.params.userId;
     await DocumentService.getDocument(documentId, userId);
     let document = props.documentStore.docInfos.find((doc) => doc.id === documentId);
     this.props.documentStore.setCurrentFile({ id: document.id, file: await DocumentService.getFile(document) })
@@ -51,8 +51,8 @@ export default class DocumentViewContainer extends Component {
 
   onStartHighlighting = () => {
     let document = this.props.documentStore.docInfos.find((doc) =>
-      doc.id === parseInt(this.props.match.params.documentId, 10) &&
-      doc.userId === parseInt(this.props.match.params.userId, 10));
+      doc.id === this.props.match.params.documentId &&
+      doc.userId === this.props.match.params.userId);
     DocumentService.addOwnDocument(document.id);
     let userId = this.props.userStore.currentUser.id;
     this.props.history.push(`/document/${document.id}/${userId}`)
@@ -61,8 +61,8 @@ export default class DocumentViewContainer extends Component {
   render() {
     // eslint-disable-next-line
     let document = this.props.documentStore.docInfos.find((doc) =>
-      doc.id === parseInt(this.props.match.params.documentId, 10) &&
-      doc.userId === parseInt(this.props.match.params.userId, 10));
+      doc.id === this.props.match.params.documentId &&
+      doc.userId === this.props.match.params.userId);
     let loading = document &&
       document.id === this.props.documentStore.currentFile.id &&
       document.id === this.props.documentStore.highlightsString.id;

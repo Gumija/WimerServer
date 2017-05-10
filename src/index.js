@@ -11,6 +11,7 @@ import DbIniter from './db/db';
 import visitsHandler from './visits';
 import documentsHandler from './documents';
 import highlightHandler from './highlights';
+import hasher from './hasher';
 
 // API Access link for creating client ID and secret:
 // https://code.google.com/apis/console/
@@ -34,6 +35,8 @@ let users = {
    SET name = ?, email = ?, google_id = ? \
    WHERE id = ?'
 }
+
+
 
 let dbIniter = DbIniter;
 dbIniter.initDB();
@@ -180,7 +183,7 @@ app.use('/visits', visitsHandler);
 
 app.get('/user', (req, res) => {
   if (req.user) {
-    res.json(req.user);
+    res.json({...req.user, id: hasher.encode(req.user.id)});
   } else {
     res.json({});
   }

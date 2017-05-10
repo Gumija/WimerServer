@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/hasher.js"],"names":["hasher"],"mappings":";;;;;;AAAA;;;;;;AAEA,IAAIA,SAAS,sBAAY,oBAAZ,EAAkC,EAAlC,CAAb;;kBAEeA,M","file":"hasher.js","sourcesContent":["import Hashids from 'hashids';\n\nvar hasher = new Hashids(\"Wimer Project Salt\", 10);\n\nexport default hasher;"]}

@@ -20,6 +20,10 @@ var _multer = require('multer');
 
 var _multer2 = _interopRequireDefault(_multer);
 
+var _hasher = require('./hasher');
+
+var _hasher2 = _interopRequireDefault(_hasher);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var documents = {
@@ -51,8 +55,10 @@ var upload = (0, _multer2.default)({ dest: 'uploads/' });
 
 // download file
 router.get('/download/:id', function (req, res) {
-  console.log(_mysql2.default.format(documents.selectByDocumentId, [req.params.id]));
-  _db2.default.query(_mysql2.default.format(documents.selectByDocumentId, [req.params.id]), function (error, results, fields) {
+  var id = _hasher2.default.decode(req.params.id);
+
+  console.log(_mysql2.default.format(documents.selectByDocumentId, [id]));
+  _db2.default.query(_mysql2.default.format(documents.selectByDocumentId, [id]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
@@ -66,14 +72,15 @@ router.get('/download/:id', function (req, res) {
 // update title
 router.post('/update/:id', function (req, res) {
   if (req.user) {
-    _db2.default.query(_mysql2.default.format(documents.update, [req.body.title, req.params.id, req.user.id]), function (error, results, fields) {
+    var id = _hasher2.default.decode(req.params.id);
+    _db2.default.query(_mysql2.default.format(documents.update, [req.body.title, id, req.user.id]), function (error, results, fields) {
       if (error) {
         console.log(error);
         res.sendStatus(500);
         return;
       }
       console.log(results);
-      res.json(results);
+      res.sendStatus(200);
     });
   } else {
     res.json([]);
@@ -82,27 +89,82 @@ router.post('/update/:id', function (req, res) {
 
 // get versions
 router.get('/versions/:documentId', function (req, res) {
-  console.log('QUERY', _mysql2.default.format(documents.getVersions, [req.params.documentId]));
-  _db2.default.query(_mysql2.default.format(documents.getVersions, [req.params.documentId]), function (error, results, fields) {
+  var documentId = _hasher2.default.decode(req.params.documentId);
+  console.log('QUERY', _mysql2.default.format(documents.getVersions, [documentId]));
+  _db2.default.query(_mysql2.default.format(documents.getVersions, [documentId]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
       return;
     }
     console.log(results);
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = results[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var result = _step.value;
+
+        result.id = _hasher2.default.encode(result.id);
+        result.user_id = _hasher2.default.encode(result.user_id);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
     res.json(results);
   });
 });
 
 // get document information
 router.get('/:documentId/:userId', function (req, res) {
-  _db2.default.query(_mysql2.default.format(documents.selectById, [parseInt(req.params.documentId, 10), parseInt(req.params.userId, 10)]), function (error, results, fields) {
+  var documentId = _hasher2.default.decode(req.params.documentId);
+  var userId = _hasher2.default.decode(req.params.userId);
+  _db2.default.query(_mysql2.default.format(documents.selectById, [parseInt(documentId, 10), parseInt(userId, 10)]), function (error, results, fields) {
     if (error) {
       console.log(error);
       res.sendStatus(500);
       return;
     }
     console.log(results);
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
+
+    try {
+      for (var _iterator2 = results[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var result = _step2.value;
+
+        result.id = _hasher2.default.encode(result.id);
+        result.user_id = _hasher2.default.encode(result.user_id);
+      }
+    } catch (err) {
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+          _iterator2.return();
+        }
+      } finally {
+        if (_didIteratorError2) {
+          throw _iteratorError2;
+        }
+      }
+    }
+
     res.json(results);
   });
 });
@@ -119,7 +181,10 @@ router.post('/upload', upload.single('doc'), function (req, res) {
         return;
       }
       console.log(results);
-      res.json({ id: results.insertId });
+      res.json({
+        id: _hasher2.default.encode(results.insertId),
+        userId: _hasher2.default.encode(req.user.id)
+      });
     });
   } else {
     res.sendStatus(403); // 403 Forbidden
@@ -129,8 +194,9 @@ router.post('/upload', upload.single('doc'), function (req, res) {
 // save document information
 router.post('/:documentId', function (req, res) {
   if (req.user) {
-    console.log('QUERY', _mysql2.default.format(documents.selectByDocumentId, [req.params.documentId]));
-    _db2.default.query(_mysql2.default.format(documents.selectByDocumentId, [req.params.documentId]), function (error, results, fields) {
+    var documentId = _hasher2.default.decode(req.params.documentId);
+    console.log('QUERY', _mysql2.default.format(documents.selectByDocumentId, [documentId]));
+    _db2.default.query(_mysql2.default.format(documents.selectByDocumentId, [documentId]), function (error, results, fields) {
       if (error) {
         console.log(error);
         res.sendStatus(500);
@@ -145,7 +211,10 @@ router.post('/:documentId', function (req, res) {
             return;
           }
           console.log(results);
-          res.json({ id: results.insertId });
+          res.json({
+            id: _hasher2.default.encode(results.insertId),
+            userId: _hasher2.default.encode(req.user.id)
+          });
         });
       } else {
         res.sendStatus(500);

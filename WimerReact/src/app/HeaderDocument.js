@@ -11,6 +11,7 @@ import DocumentService from './services/DocumentService';
 
 import {
   withRouter,
+  Link,
 } from 'react-router-dom';
 import { inject, observer } from 'mobx-react';
 
@@ -29,8 +30,8 @@ export default class Header extends Component {
 
   editTitle = () => {
     console.log('editted', this.state.editting);
-    let documentId = parseInt(this.props.match.params.documentId, 10);
-    let userId = parseInt(this.props.match.params.userId, 10);
+    let documentId = this.props.match.params.documentId;
+    let userId = this.props.match.params.userId;
     if (this.state.editting) {
       if (this.state.title) {
         this.setState({ editting: !this.state.editting });
@@ -52,7 +53,8 @@ export default class Header extends Component {
       <AppBar
         title={this.props.match ?
           <div >
-            {this.props.documentStore.docInfos.find((d) => d.id === parseInt(this.props.match.params.documentId, 10) && d.userId === parseInt(this.props.match.params.userId, 10)) ?
+            {this.props.documentStore.docInfos.find((d) => d.id === this.props.match.params.documentId &&
+              d.userId === this.props.match.params.userId) ?
               <div>
                 {this.state.editting ?
                   <TextField
@@ -63,13 +65,14 @@ export default class Header extends Component {
                   />
                   :
                   <p style={{ margin: 0, display: 'inline-block' }}>
-                    {this.props.documentStore.docInfos.find((d) => d.id === parseInt(this.props.match.params.documentId, 10) && d.userId === parseInt(this.props.match.params.userId, 10)).title}
+                    {this.props.documentStore.docInfos.find((d) => d.id === this.props.match.params.documentId &&
+                      d.userId === this.props.match.params.userId).title}
                   </p>
                 }
                 {(!this.state.editting || this.state.title) &&
-                <IconButton onTouchTap={this.editTitle}>
-                  <FontIcon className="material-icons" color={'white'}>{this.state.editting ? 'done' : 'edit'}</FontIcon>
-                </IconButton>
+                  <IconButton onTouchTap={this.editTitle}>
+                    <FontIcon className="material-icons" color={'white'}>{this.state.editting ? 'done' : 'edit'}</FontIcon>
+                  </IconButton>
                 }
               </div>
 
@@ -80,7 +83,9 @@ export default class Header extends Component {
           </div>
           : "NULL"}
         iconElementLeft={
-          <IconButton onTouchTap={() => this.props.history.goBack()}><BackIcon /></IconButton>
+          <Link to="/">
+            <IconButton onTouchTap={() => { }/*this.props.history.goBack()*/}><BackIcon /></IconButton>
+          </Link>
         }
         iconElementRight={
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>

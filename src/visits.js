@@ -2,6 +2,7 @@
 import express from 'express';
 import dbIniter from './db/db';
 import mysql from 'mysql';
+import hasher from './hasher';
 
 let visits = {
   insert:
@@ -21,20 +22,23 @@ let router = express.Router();
 
 // add visit
 router.post('/:documentId/:userId', (req, res) => {
-  if (req.user && req.user.id == req.params.userId) {
+  let userId = hasher.decode(req.params.userId);
+  let documentId = hasher.decode(req.params.documentId);
+  if (req.user && req.user.id == userId) {
+
     console.log('PARAMS: ', req.params)
     console.log('BODY: ', req.body)
     console.log(mysql.format(visits.insert, [
       req.user.id,
-      req.params.documentId,
-      req.params.userId,
+      documentId,
+      userId,
       new Date(),
       new Date(),
     ]));
     dbIniter.query(mysql.format(visits.insert, [
       req.user.id,
-      req.params.documentId,
-      req.params.userId,
+      documentId,
+      userId,
       new Date(),
       new Date(),
     ]),
@@ -64,6 +68,10 @@ router.get('/', (req, res) => {
           return;
         }
         console.log(results);
+        for(let result of results) {
+          result.document_id = hasher.encode(result.document_id);
+          result.document_user_id = hasher.encode(result.document_user_id);
+        }
         res.json(results);
       }
     )

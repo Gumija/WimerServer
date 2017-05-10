@@ -136,7 +136,7 @@ export default class Home extends Component {
             style={{ backgroundColor: 'lightgrey', height: 240, display: 'flex' }}
             activeStyle={{ backgroundColor: 'lightgreen' }}
             rejectStyle={{ backgroundColor: 'red' }}
-            accept={'text/plain,application/pdf'}
+            accept={'text/plain'}
             maxSize={120000000}
             multiple={false}
             onDrop={this.handleDrop}>

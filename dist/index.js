@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
@@ -51,6 +53,10 @@ var _documents2 = _interopRequireDefault(_documents);
 var _highlights = require('./highlights');
 
 var _highlights2 = _interopRequireDefault(_highlights);
+
+var _hasher = require('./hasher');
+
+var _hasher2 = _interopRequireDefault(_hasher);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -203,7 +209,7 @@ app.use('/visits', _visits2.default);
 
 app.get('/user', function (req, res) {
   if (req.user) {
-    res.json(req.user);
+    res.json(_extends({}, req.user, { id: _hasher2.default.encode(req.user.id) }));
   } else {
     res.json({});
   }
