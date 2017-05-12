@@ -51,7 +51,9 @@ export default class DocumentView extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.highlightsString.str !== this.props.highlightsString.str && this.presenter &&
+    if ((prevProps.highlightsString.str !== this.props.highlightsString.str || 
+      this.highlighter.serialize() == 'type:textContent')
+      && this.presenter &&
       this.props.highlightsString.str.match(/c\d+-\d+-\d+-\d+/g)) {
       for (let m of this.props.highlightsString.str.match(/c\d+-\d+-\d+-\d+/g)) {
         // eslint-disable-next-line

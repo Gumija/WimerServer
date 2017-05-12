@@ -113,7 +113,7 @@ _passport2.default.deserializeUser(function (obj, done) {
 _passport2.default.use(new _passportGoogleOauth2.default.OAuth2Strategy({
   clientID: GOOGLE_CLIENT_ID,
   clientSecret: GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://morning-stream-82096.herokuapp.com/auth/google/callback",
+  callbackURL: "http://" + process.env.PAGE_URL + "/auth/google/callback",
   passReqToCallback: true
 }, function (request, accessToken, refreshToken, profile, done) {
   console.log('Access Token: ', accessToken);
