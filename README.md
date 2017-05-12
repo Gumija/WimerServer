@@ -26,11 +26,13 @@ node dist
 ```
 ### Required ENVIRONMENTAL variables
 
-DATABASE_URL - The connaction string
+`DATABASE_URL` - The connaction string
 
-GOOGLE_CLIENT_ID - Google client id from dev console
+`GOOGLE_CLIENT_ID` - Google client id from dev console
 
-GOOGLE_CLIENT_SECRET - Google client sercet from dev console
+`GOOGLE_CLIENT_SECRET` - Google client sercet from dev console
+
+`PAGE_URL` - Used to create to google authentication callback url (`callbackURL: "http://"+ process.env.PAGE_URL +"/auth/google/callback"`)
 
 ### Required database
 
